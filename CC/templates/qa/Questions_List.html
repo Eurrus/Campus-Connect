@@ -1,0 +1,639 @@
+{% load humanize %}
+{% load static %}
+
+
+{% block content %}
+
+
+
+<!DOCTYPE html>
+
+
+<html class="html__responsive ">
+
+<head>
+
+    <title>Questions - Stack Overflow-Clone</title>
+    <link href="{% static 'notification/css/notification.css' %}" type="text/css" media="all" rel="stylesheet" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script async src="https://cdn.sstatic.net/Js/third-party/stacks/stacks.min.js?v=587378ef592b"></script>
+    <script src="https://cdn.sstatic.net/Js/stub.en.js?v=218a32d1dba9"></script>
+
+    <link href="{% static 'home/css/notification.css' %}" type="text/css" media="all" rel="stylesheet" />
+    <link href="{% static 'home/css/notification.css' %}" type="text/css" media="all" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Shared/stacks.css?v=15473555f232">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.sstatic.net/Sites/stackoverflow/primary.css?v=de9fb8b74f61">
+    <link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Shared/Channels/channels.css?v=47a5e0f03c81">
+    <style>
+        .logo-name {
+            padding: 8px;
+            color: #568;
+            border: 1px solid white;
+            font-family: 'Nexa';
+            src: url(...);
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        .fa-stack-overflow {
+            color: blue;
+        }
+    </style>
+</head>
+
+<body class="questions-page unified-theme">
+    <div id="notify-container"></div>
+    <div id="custom-header"></div>
+    {% if request.user.is_authenticated %}
+
+
+    <header class="top-bar js-top-bar top-bar__network">
+        <div class="wmx12 mx-auto d-flex ai-center h100" role="menubar">
+            <div class="-main flex--item">
+                <a href="#" class="left-sidebar-toggle p0 ai-center jc-center" role="menuitem" aria-haspopup="true"
+                    aria-controls="left-sidebar" aria-expanded="false"><span class="ps-relative"></span></a>
+                <div class="topbar-dialog leftnav-dialog js-leftnav-dialog dno">
+                    <div class="left-sidebar js-unpinned-left-sidebar" data-can-be="left-sidebar"
+                        data-is-here-when="sm"></div>
+                </div>
+                <a href="{% url 'Profile:home' %}" class="-logo">
+                    <i class="fab fa-stack-overflow fa-3x"></i>
+                    <div class="logo-name">StackOverFlow-<b>Clone</b></div>
+                </a>
+            </div>
+
+            <ol class="overflow-x-auto ml-auto -secondary d-flex ai-center list-reset h100 user-logged-in"
+                role="presentation">
+                <li class="-item searchbar-trigger"><a href="#" class="-link js-searchbar-trigger" role="button"
+                        aria-label="Search" aria-haspopup="true" aria-controls="search"
+                        title="Click to show search"><svg aria-hidden="true" class="svg-icon iconSearch" width="18"
+                            height="18" viewBox="0 0 18 18">
+                            <path
+                                d="m18 16.5-5.14-5.18h-.35a7 7 0 10-1.19 1.19v.35L16.5 18l1.5-1.5ZM12 7A5 5 0 112 7a5 5 0 0110 0Z" />
+                        </svg></a></li>
+            </ol>
+
+        </div>
+    </header>
+
+
+    {% else %}
+
+    <header class="top-bar js-top-bar top-bar__network">
+        <div class="wmx12 mx-auto d-flex ai-center h100" role="menubar">
+            <div class="-main flex--item">
+                <a href="#" class="left-sidebar-toggle p0 ai-center jc-center js-left-sidebar-toggle" role="menuitem"
+                    aria-haspopup="true" aria-controls="left-sidebar" aria-expanded="false"><span
+                        class="ps-relative"></span></a>
+                <div class="topbar-dialog leftnav-dialog js-leftnav-dialog dno">
+                    <div class="left-sidebar js-unpinned-left-sidebar" data-can-be="left-sidebar"
+                        data-is-here-when="sm"></div>
+                </div>
+                <a href="{% url 'Profile:home' %}" class="-logo">
+                    <i class="fab fa-stack-overflow fa-3x"></i>
+                    <div class="logo-name">StackOverFlow-<b>Clone</b></div>
+                </a>
+            </div>
+
+            <ol class="overflow-x-auto ml-auto -secondary d-flex ai-center list-reset h100 user-logged-out"
+                role="presentation">
+                <li class="-ctas">
+                    <a href="{% url 'users:login_request' %}" class="login-link s-btn s-btn__filled py8"
+                        rel="nofollow">Log in</a>
+                    <a href="{% url 'users:signup_view' %}" class="login-link s-btn s-btn__primary py8">Sign up</a>
+                </li>
+                <li class="js-topbar-dialog-corral" role="presentation">
+                </li>
+            </ol>
+        </div>
+    </header>
+
+    {% endif %}
+
+
+    <!-- NOTIFICATION'S INBOX - START -->
+
+    <div class="myNavbar">
+        <div class="navbar_right">
+            <myDiv class="myNotification" id="Notif">
+                <a class="icon_wrap" action=""></a>
+
+                <div class="notification_dd">
+                    <div class="topbar-dialog inbox-dialog dno" role="menu" style="display: block;">
+
+                        <div class="header fw-wrap">
+                            <div class="flex--item fl1">
+                                <div class="ai-center d-flex jc-end">
+                                    <div class="-right">
+                                        <a href="#">all items</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-content">
+                            <ul>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </myDiv>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION'S INBOX - END -->
+
+
+
+    <!-- ACHIEVEMENT'S INBOX - START -->
+
+    <style>
+        .earned {
+            color: green;
+        }
+    </style>
+
+
+
+    <!-- ACHIEVEMENT'S INBOX - END -->
+
+    <!-- REVIEW'S INBOX - START -->
+
+    <div class="review_navbar">
+        <div class="review_bar_right">
+            <reviewDiv class="review_notification">
+                <a class="review_icon_wrap" action=""></a>
+
+                <div class="review_dd">
+                    <div class="topbar-dialog inbox-dialog dno" role="menu" style="display: block;">
+
+                        <div class="header fw-wrap">
+                            <div class="flex--item fl1">
+                                <div class="ai-center d-flex jc-end">
+                                    <div class="-right">
+                                        <a href="{% url 'users:logout_view' %}">Log Out</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="modal-content">
+
+                        </div>
+                    </div>
+                </div>
+            </reviewDiv>
+        </div>
+    </div>
+
+    <!-- REVIEW'S INBOX - END -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+        integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+
+    <div class="container">
+
+
+
+        <div id="left-sidebar" data-is-here-when="md lg" class="left-sidebar js-pinned-left-sidebar ps-relative">
+            <div class="left-sidebar--sticky-container js-sticky-leftnav">
+                <nav role="navigation">
+                    <ol class="nav-links">
+                        <li class="">
+                            <a href="/" class="pl8 nav-links--link">
+                                <div class="d-flex ai-center">
+                                    <div class="flex--item truncate">
+                                        Home
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <ol class="nav-links">
+                                <li class="fs-fine tt-uppercase ml8 mt16 mb4 fc-light">Public</li>
+
+                                <li class=" youarehere">
+                                    <a id="nav-questions" href="/questions"
+                                        class="pl8 nav-links--link -link__with-icon">
+                                        <svg aria-hidden="true" class="svg-icon iconGlobe" width="18" height="18"
+                                            viewBox="0 0 18 18">
+                                            <path
+                                                d="M9 1C4.64 1 1 4.64 1 9c0 4.36 3.64 8 8 8 4.36 0 8-3.64 8-8 0-4.36-3.64-8-8-8ZM8 15.32a6.46 6.46 0 01-4.3-2.74 6.46 6.46 0 01-.93-5.01L7 11.68v.8c0 .88.12 1.32 1 1.32v1.52Zm5.72-2c-.2-.66-1-1.32-1.72-1.32h-1v-2c0-.44-.56-1-1-1H6V7h1c.44 0 1-.56 1-1V5h2c.88 0 1.4-.72 1.4-1.6v-.33a6.45 6.45 0 013.83 4.51 6.45 6.45 0 01-1.51 5.73v.01Z" />
+                                        </svg> <span class="-link--channel-name">Questions</span>
+                                    </a>
+                                </li>
+
+
+
+                                <li class="">
+                                    <a id="nav-tags" class="nav-links--link">
+                                        <div class="d-flex ai-center">
+                                            <div class="flex--item truncate">
+                                                Tags
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a id="nav-users" class="nav-links--link">
+                                        <div class="d-flex ai-center">
+                                            <div class="flex--item truncate">
+                                                Users
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+
+
+                            </ol>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+        </div>
+
+
+
+
+        <div id="content" class="snippet-hidden">
+
+
+
+            <div id="mainbar" role="main" aria-labelledby="h-all-questions">
+
+
+
+
+                <div class="d-flex">
+                    <h1 class="flex--item fl1 fs-headline1 mb24">All Questions</h1>
+                    <div class="ml12 aside-cta flex--item print:d-none">
+                        <a href="{% url 'qa:new_question' %}" class="ws-nowrap s-btn s-btn__primary">Ask Question</a>
+                    </div>
+                </div>
+
+
+
+                <div data-controller="se-uql" data-se-uql-id="" data-se-uql-sanitize-tag-query="false">
+                    <div class="d-flex ai-center jc-space-between mb12 sm:fd-column sm:ai-stretch">
+
+
+                        <div class="uql-nav flex--item"
+                            data-action="se-uql-list:edit-current-requested@document->se-uql#toggleEditor">
+                            <div class="d-flex ai-center jc-space-between">
+                                <div class="js-uql-navigation s-btn-group flex--item mr16 ff-row-nowrap">
+                                    <a class="s-btn s-btn__muted s-btn__outlined s-btn__sm d-flex is-selected"
+                                        data-nav-value="Newest" href="{% url 'qa:questions' %}" data-shortcut="N">
+                                        <div class="flex--item">Newest</div>
+                                    </a>
+                                    {% if query == '' %}
+                                    <a class="s-btn s-btn__muted s-btn__outlined s-btn__sm d-flex"
+                                        data-nav-value="Active" data-shortcut="A">
+                                        <div class="flex--item">Active</div>
+                                    </a>
+                                    {% else %}
+                                    <a class="s-btn s-btn__muted s-btn__outlined s-btn__sm d-flex"
+                                        data-nav-value="Active" data-shortcut="A">
+                                        <div class="flex--item">Active</div>
+                                    </a>
+                                    {% endif %}
+                                    {% if query == '' %}
+                                    <a class="s-btn s-btn__muted s-btn__outlined s-btn__sm d-flex uql-nav--expanded-item"
+                                        data-nav-value="Bounties" data-shortcut="E">
+                                        <div class="flex--item">Bountied</div>
+                                        <div
+                                            class="s-badge s-badge__bounty s-badge__bounty s-badge__sm lh-xs ml4 px4 flex--item">
+                                        </div>
+                                    </a>
+                                    {% else %}
+                                    <a class="s-btn s-btn__muted s-btn__outlined s-btn__sm d-flex uql-nav--expanded-item"
+                                        data-nav-value="Bounties" data-shortcut="E">
+                                        <div class="flex--item">Bountied</div>
+                                        <div
+                                            class="s-badge s-badge__bounty s-badge__bounty s-badge__sm lh-xs ml4 px4 flex--item">
+                                        </div>
+                                    </a>
+                                    {% endif %}
+                                    {% if query == '' %}
+                                    <a class="s-btn s-btn__muted s-btn__outlined s-btn__sm d-flex uql-nav--expanded-item"
+                                        data-nav-value="Unanswered">
+                                        <div class="flex--item">Unanswered</div>
+                                    </a>
+                                    {% else %}
+                                    <a class="s-btn s-btn__muted s-btn__outlined s-btn__sm d-flex uql-nav--expanded-item"
+                                        data-nav-value="Unanswered">
+                                        <div class="flex--item">Unanswered</div>
+                                    </a>
+                                    {% endif %}
+                                    <button class="s-btn s-btn__muted s-btn__outlined s-btn__sm s-btn__dropdown"
+                                        role="button" data-controller="s-popover" data-action="s-popover#toggle"
+                                        data-se-uql-target="toggleMoreButton" aria-haspopup="true" aria-expanded="false"
+                                        aria-controls="uql-more-popover">
+                                        More
+                                    </button>
+                                </div>
+
+                                <div class="s-popover z-dropdown ws2" id="uql-more-popover"
+                                    data-se-uql-target="morePopover">
+                                    <div class="s-popover--arrow"></div>
+                                    <ul class="list-reset mtn8 mbn8 js-uql-navigation">
+                                        {% if query == '' %}
+                                        <li class="uql-item my0 uql-nav--collapsed-item">
+                                            <a class="mln12 mrn12 px12 py6 fl1 s-block-link" data-shortcut="">
+                                                Bountied
+                                                <span
+                                                    class="s-badge s-badge__bounty s-badge__bounty s-badge__sm lh-xs px4">{{count_bounty}}</span>
+                                            </a>
+                                        </li>
+                                        {% else %}
+                                        <li class="uql-item my0 uql-nav--collapsed-item">
+                                            <a class="mln12 mrn12 px12 py6 fl1 s-block-link" data-shortcut="">
+                                                Bountied
+                                                <span
+                                                    class="s-badge s-badge__bounty s-badge__bounty s-badge__sm lh-xs px4">{{count_bounty}}</span>
+                                            </a>
+                                        </li>
+                                        {% endif %}
+
+                                        {% if query == '' %}
+                                        <li class="uql-item my0 uql-nav--collapsed-item">
+                                            <a class="mln12 mrn12 px12 py6 fl1 s-block-link" data-shortcut="">
+                                                Unanswered
+                                            </a>
+                                        </li>
+                                        {% else %}
+                                        <li class="uql-item my0 uql-nav--collapsed-item">
+                                            <a class="mln12 mrn12 px12 py6 fl1 s-block-link" data-shortcut="">
+                                                Unanswered
+                                            </a>
+                                        </li>
+                                        {% endif %}
+                                        <li class="uql-item uql-item__separator bg-black-075 d:bg-black-025"></li>
+                                        <li class="uql-item uql-item__separator bg-black-075 d:bg-black-025"></li>
+                                    </ul>
+                                </div>
+
+                                <div class="flex--item">
+                                    <button class="s-btn s-btn__filled s-btn__sm s-btn__icon ws-nowrap" role="button"
+                                        data-controller="s-expandable-control"
+                                        data-s-expandable-control-toggle-class="is-selected"
+                                        data-se-uql-target="toggleFormButton" aria-expanded="false"
+                                        aria-controls="uql-form">
+                                        <svg aria-hidden="true" class="svg-icon iconFilter" width="18" height="18"
+                                            viewBox="0 0 18 18">
+                                            <path d="M2 4h14v2H2V4Zm2 4h10v2H4V8Zm8 4H6v2h6v-2Z" />
+                                        </svg> Filter
+                                    </button>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <script type="text/html" data-se-uql-target="saveTemplate">
+            <aside class="s-modal"
+                   tabindex="0"
+                   role="dialog"
+                   aria-labelledby="uql-modal-title"
+                   aria-describedby="uql-modal-description"
+                   aria-hidden="true"
+                   data-controller="se-uql-save">
+                <div class="s-modal--dialog" role="document" data-controller="se-draggable">
+                    <h1 class="s-modal--header fw-bold mb12 mr48 js-first-tabbable" id="uql-modal-title" data-se-draggable-target="handle" tabindex="0">Create a custom filter</h1>
+                    <form id="uql-modal-description" data-action="se-uql-save#createNew">
+                        <div class="d-flex gs4 gsy fd-column js-stacks-validation">
+                            <div class="flex--item">
+                                <div class="d-flex gs2 gsy fd-column">
+                                    <label class="flex--item s-label" for="uql-name-field">Filter title</label>
+                                </div>
+                            </div>
+                            <div class="d-flex ps-relative">
+                                <input class="s-input js-modal-initial-focus"
+                                       name="name"
+                                       id="uql-name-field"
+                                       type="text"
+                                       autocomplete="off"
+                                       placeholder="Give your custom filter a title"
+                                       data-se-uql-save-target="name"
+                                       data-action="input->se-uql-save#liveValidate" />
+                            </div>
+                            <div class="s-input-message mt4 js-stacks-validation-message d-none"></div>
+                        </div>
+                        <div class="mt12">
+                                <button class="s-btn s-btn__primary" type="submit" data-se-uql-target="saveButton">
+                                    Save filter
+                                </button>
+                                <button class="s-btn js-modal-close" type="button" data-action="se-uql#dismissModal">Cancel</button>
+                        </div>
+                    </form>
+                    <button class="s-modal--close s-btn s-btn__muted js-modal-close js-last-tabbable" href="#" aria-label="Close">
+                        <svg aria-hidden="true" class="svg-icon iconClearSm" width="14" height="14" viewBox="0 0 14 14"><path d="M12 3.41 10.59 2 7 5.59 3.41 2 2 3.41 5.59 7 2 10.59 3.41 12 7 8.41 10.59 12 12 10.59 8.41 7 12 3.41Z"/></svg>
+                    </button>
+                </div>
+            </aside>
+        </script>
+                </div>
+
+
+
+                <div id="questions" class=" flush-left">
+
+                    {% for question in questions %}
+                    <div class="question-summary" id="question-summary-63662412">
+                        <div class="statscontainer">
+                            <div class="summary">
+                                <h3><a href="{{question.get_absolute_url}}"
+                                        class="question-hyperlink">{{question.title}}</a></h3>
+                                <div class="excerpt">
+                                    {{question.body|truncatechars:200}}
+                                </div>
+
+                                <div class="d-flex ai-start fw-wrap">
+                                    <div class="flex--item">
+                                    </div>
+                                    <div class="flex--item ml-auto fl-shrink0 started mt0">
+                                        <div class="user-info ">
+                                            <div class="user-action-time">
+                                            </div>
+                                            <div class="user-gravatar32">
+                                                <a href="{{question.post_owner.profile.get_absolute_url}}">
+                                                </a>
+                                            </div>
+                                            <div class="user-details">
+                                                <a
+                                                    href="{{question.post_owner.profile.get_absolute_url}}">{{question.post_owner}}</a>
+                                                <div class="-flair">
+                                                    <span class="reputation-score" title="reputation score "
+                                                        dir="ltr">{{question.post_owner}}
+                                                    </span>
+
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+
+
+                        <br class="cbt" />
+
+                    </div>
+
+                    <br class="cbt" />
+
+
+                    <div class="s-pagination site1 themed pager float-left">
+                        {% if questions.has_other_pages %}
+                        {% for i in questions.paginator.page_range %}
+                        {% if questions.number == i %}
+                        <div class="s-pagination--item is-selected">{{ i }}</div>
+                        {% else %}
+                        <a class="s-pagination--item js-pagination-item" href="?page={{ i }}" rel=""
+                            title="Go to page 2">{{
+                            i }}</a>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+
+
+
+                </div>
+
+
+                <div id="sidebar" role="complementary" aria-label="sidebar">
+
+                    <div class="s-sidebarwidget s-sidebarwidget__yellow s-anchors s-anchors__grayscale mb16"
+                        data-tracker="cb=1">
+                        <ul class="d-block p0 m0">
+                            <div
+                                class="s-sidebarwidget--header s-sidebarwidget__small-bold-text fc-light d:fc-black-900 bb bbw1">
+                                The Overflow Blog
+                            </div>
+                            <li class="s-sidebarwidget--item d-flex px16">
+                                <div class="flex--item1 fl-shrink0">
+                                    <svg aria-hidden="true" class="va-text-top svg-icon iconPencilSm" width="14"
+                                        height="14" viewBox="0 0 14 14">
+                                        <path
+                                            d="m11.1 1.71 1.13 1.12c.2.2.2.51 0 .71L11.1 4.7 9.21 2.86l1.17-1.15c.2-.2.51-.2.71 0ZM2 10.12l6.37-6.43 1.88 1.88L3.88 12H2v-1.88Z" />
+                                    </svg>
+                                </div>
+                                <div class="flex--item wmn0 ow-break-word">
+                                    <a href="#">StackOver Flow-Clone</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+
+
+                    <div class="module js-gps-related-tags">
+                        <h4 id="h-related-tags">Related Tags</h4>
+                        {% for relatedTag in relatedTags %}
+                        <div data-name="{{relatedTag}}">
+                            <a href="{% url 'tagbadge:taggedItemsFrom_All' relatedTag.id %}"
+                                class="post-tag no-tag-menu" title="show questions tagged '{{relatedTag}}'"
+                                rel="tag">{{relatedTag}}</a>&nbsp;<span class="item-multiplier"><span
+                                    class="item-multiplier-x">×</span>&nbsp;<span
+                                    class="item-multiplier-count">{{relatedTag.taggit_taggeditem_items.all.count}}</span>
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <footer id="footer" class="site-footer js-footer" role="contentinfo">
+            <div class="site-footer--container">
+                <div class="site-footer--logo">
+                    <i class="fab fa-stack-overflow fa-3x"></i>
+                </div>
+                <nav class="site-footer--nav">
+                    <div class="site-footer--col site-footer--col__visible js-footer-col" data-name="default">
+                        <h5 class="-title"><a href="" class="">Stack Overflow - Clone</a></h5>
+                        <ul class="-list js-primary-footer-links">
+                            <li class="-item"><a href="/questions" class=" -link"
+                                    data-gps-track="footer.click({ location: 4, link: 16})">Questions</a></li>
+                            <li class="-item"><a href="" class=" -link">Jobs</a></li>
+                            <li class="-item"><a href="" class=" -link">Developer Jobs Directory</a></li>
+                            <li class="-item"><a href="" class=" -link">Salary Calculator</a></li>
+                            <li class="-item"><a href="" class=" -link">Help</a></li>
+                            <li class="-item"><a onclick='StackExchange.switchMobile("on")' class=" -link">Mobile</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="site-footer--col site-footer--col__visible js-footer-col" data-name="default">
+                        <h5 class="-title"><a href="">Products</a></h5>
+                        <ul class="-list">
+                            <li class="-item"><a href="" class=" -link">Teams</a></li>
+                            <li class="-item"><a href="" class=" -link">Talent</a></li>
+                            <li class="-item"><a href="" class=" -link">Advertising</a></li>
+                            <li class="-item"><a href="" class=" -link">Enterprise</a></li>
+                        </ul>
+                    </div>
+                    <div class="site-footer--col site-footer--col__visible js-footer-col" data-name="default">
+                        <h5 class="-title"><a href="">Company</a></h5>
+                        <ul class="-list">
+                            <li class="-item"><a class=" -link" href="">About</a></li>
+                            <li class="-item"><a class=" -link" href="">Press</a></li>
+                            <li class="-item"><a class=" -link" href="">Work Here</a></li>
+                            <li class="-item"><a class=" -link" href="">Legal</a></li>
+                            <li class="-item"><a class=" -link" href="">Privacy Policy</a></li>
+                            <li class="-item"><a class="-link" href="">Terms of Service</a></li>
+                            <li class="-item"><a class=" -link" href="">Contact Us</a></li>
+                            <li class="-item" id="consent-footer-link"><a class="-link js-cookie-settings" href="#"
+                                    data-consent-popup-loader="footer">Cookie Settings</a></li>
+                            <li class="-item"><a class=" -link" href="">Cookie Policy</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="site-footer--copyright fs-fine">
+                    <ul class="-list">
+                        <li class="-item"><a class="-link" href="">Blog</a></li>
+                        <li class="-item"><a href="" class="-link">Facebook</a></li>
+                        <li class="-item"><a href="" class="-link">Twitter</a></li>
+                        <li class="-item"><a href="" class="-link">LinkedIn</a></li>
+                        <li class="-item"><a href="" class="-link">Instagram</a></li>
+                    </ul>
+
+                    <p class="mt-auto mb24">
+                        site design / logo &#169; 2021 Stack Exchange Inc; user contributions licensed under <a
+                            href="https://stackoverflow.com/help/licensing">cc by-sa</a>. <span
+                            id="svnrev">rev&nbsp;2021.11.12.40742</span>
+                    </p>
+                </div>
+            </div>
+
+        </footer>
+
+
+        <div id="onetrust-consent-sdk" class="d-none"></div>
+        <div id="onetrust-banner-sdk" data-controller="s-modal"></div>
+        <div id="ot-pc-content" class="d-none"></div>
+        <div id="onetrust-style" class="d-none">&nbsp;</div>
+        <div class="d-none js-consent-banner-version" data-consent-banner-version="baseline"></div>
+
+        <script type="text/javascript" src="{% static 'notification/js/notification.js' %}"></script>
+
+
+</body>
+
+</html>
+
+
+{% endblock content %}

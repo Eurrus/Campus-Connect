@@ -14,15 +14,16 @@ def signup_view(request):
         form = SignUpForm(request.POST)
         # getFormEmail = form.cleaned_data['email']
         if form.is_valid():
-            form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             getFormEmail = form.cleaned_data['email']
+            branch=form.cleaned_data.get('branch')
+            user= form.save()
             user = authenticate(username=username, password=raw_password)
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             request.user.profile.email = getFormEmail
-            request.user.profile.save()
-            return redirect('Profile:base')
+            request.user.profile.branch=branch
+            return redirect('Profile:home')
     else:
         form = SignUpForm()
         print("Hello")
@@ -53,5 +54,6 @@ def login_request(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('profile:home')
+    print("you logged out")
+    return redirect('Profile:home')
 

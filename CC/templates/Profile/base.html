@@ -5,6 +5,7 @@
 
 </html>
 
+
 <head>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -65,7 +66,20 @@
                 <div class="logo-name">StackOverFlow-<b>Clone</b></div>
             </a>
         </div>
+        {% if user.is_authenticated %}
+        <ol class="overflow-x-auto ml-auto -secondary d-flex ai-center list-reset h100 user-logged-out"
+            role="presentation">
+            <li class="-ctas">
+                <a href="{% url 'users:logout_view' %}" class="login-link s-btn s-btn__filled py8" rel="nofollow">Log
+                    out</a>
 
+            </li>
+            <li class="js-topbar-dialog-corral" role="presentation">
+            </li>
+        </ol>
+
+
+        {% else %}
         <ol class="overflow-x-auto ml-auto -secondary d-flex ai-center list-reset h100 user-logged-out"
             role="presentation">
             <li class="-ctas">
@@ -77,5 +91,8 @@
             </li>
         </ol>
 
+
+        {% endif %}
     </div>
 </header>
+{% block content %}{% endblock content%}
