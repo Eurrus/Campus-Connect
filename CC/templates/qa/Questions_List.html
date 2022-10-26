@@ -100,13 +100,15 @@
 
             <ol class="overflow-x-auto ml-auto -secondary d-flex ai-center list-reset h100 user-logged-out"
                 role="presentation">
+                {% if request.user.is_authenticated %}
                 <li class="-ctas">
                     <a href="{% url 'users:login_request' %}" class="login-link s-btn s-btn__filled py8"
                         rel="nofollow">Log in</a>
                     <a href="{% url 'users:signup_view' %}" class="login-link s-btn s-btn__primary py8">Sign up</a>
                 </li>
-                <li class="js-topbar-dialog-corral" role="presentation">
-                </li>
+                {% endif %}
+                <a href="{% url 'users:logout_view' %}" class="login-link s-btn s-btn__filled py8" rel="nofollow">Log
+                    out</a>
             </ol>
         </div>
     </header>
@@ -116,34 +118,7 @@
 
     <!-- NOTIFICATION'S INBOX - START -->
 
-    <div class="myNavbar">
-        <div class="navbar_right">
-            <myDiv class="myNotification" id="Notif">
-                <a class="icon_wrap" action=""></a>
 
-                <div class="notification_dd">
-                    <div class="topbar-dialog inbox-dialog dno" role="menu" style="display: block;">
-
-                        <div class="header fw-wrap">
-                            <div class="flex--item fl1">
-                                <div class="ai-center d-flex jc-end">
-                                    <div class="-right">
-                                        <a href="#">all items</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-content">
-                            <ul>
-
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </myDiv>
-        </div>
-    </div>
 
     <!-- NOTIFICATION'S INBOX - END -->
 
@@ -171,20 +146,10 @@
                 <div class="review_dd">
                     <div class="topbar-dialog inbox-dialog dno" role="menu" style="display: block;">
 
-                        <div class="header fw-wrap">
-                            <div class="flex--item fl1">
-                                <div class="ai-center d-flex jc-end">
-                                    <div class="-right">
-                                        <a href="{% url 'users:logout_view' %}">Log Out</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
 
-                        <div class="modal-content">
 
-                        </div>
+
                     </div>
                 </div>
             </reviewDiv>
