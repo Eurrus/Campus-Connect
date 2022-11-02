@@ -1,18 +1,39 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Question
 from .forms import QuestionForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
 def questions(request):
- context={}
- return render(request, 'qa/Questions_List.html', context)
+ questions = Question.objects.all()
+ questions_count=Question.objects.count()
+ context={
+    'questions': questions,
+    'questions_count': questions_count,
+    }
+ print(questions_count)
+ return render(request, 'qa/Questions_List.html',context)
+def questionDetailView(request, pk,):  # slug):
+    data = get_object_or_404(Question, pk=pk)
+    context = {
+        'data': data,
+    }
+    print(data.body)
+    print(data)
+    return render(request, 'qa/questionDetailView.html', context)
+
+
+
+
+
+    
+    
 @login_required
 def new_question(request):
     if request.method == 'POST':
         form = QuestionForm(request.POST, request.FILES)
-        print("if")
         if form.is_valid():
                 print("valid form")
                 formTags = form.cleaned_data['tags']
