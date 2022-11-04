@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Question,Answer
-from .forms import QuestionForm,AnswerForm
+from .forms import QuestionForm,AnswerForm,EditAnswerForm,UpdateQuestion
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
@@ -90,8 +90,63 @@ def deleteQuestion(request, question_id):
         messages.error(request, 'You are not the Post Owner')
         # return JsonResponse({'action':'notPostOwner'})
         return redirect('qa:questionDetailView', pk=question_id)
+@login_required
+def edit_question(request, question_id):
+    post = Question.objects.get(id=question_id)
+    post_owner = post.post_owner
+    data = get_object_or_404(Question, id=question_id)
+    if request.method != 'POST':
+        form = UpdateQuestion(request.POST or None,
+                              request.FILES or None, instance=post)
+    else:
+        form = UpdateQuestion(
+            instance=post, data=request.POST, files=request.FILES)
+        if form.is_valid():
+            form.save(commit=False)
+            post.q_edited_time = timezone.now()
+            post.active_date = timezone.now()
+            post.q_edited_by = request.user
+            request.user.profile.editPostTimeOfUser = timezone.now()
+            request.user.profile.save()     
+            print(form.errors)
+            form.save()
+            return redirect('Profile:home')
+        else:
+            print(form.errors)
+            messages.error(request,
+                           'Something went wrong!')
+    context = {
+        'post': post,
+        'form': form,
+        'post_owner': post_owner}
+    return render(request, 'qa/edit_question.html', context)
+@login_required
+def edit_answer(request, answer_id):
+    post = Answer.objects.get(id=answer_id)
+    post_owner = post.answer_owner
+    data = get_object_or_404(Answer, id=answer_id)
+    if request.method == 'POST':
+        form = EditAnswerForm(instance=post,
+                              data=request.POST,
+                              files=request.FILES)
+        if form.is_valid():
+            form.save(commit=False)
+            post.a_edited_time = timezone.now()
+            post.active_time = timezone.now()
+            post.a_edited_by = request.user
+            request.user.profile.editPostTimeOfUser = timezone.now()
+            request.user.profile.save() 
+            form.save()
+            return redirect('Profile:home')
+        else:
+            messages.error(request, 'Form is Not Valid for some reason')
+    else:
+        form = EditAnswerForm(request.POST or None,
+                              request.FILES or None,
+                              instance=post)
 
-
+    context = {'post': post, 'form': form, 'post_owner': post_owner}
+    return render(request, 'qa/edit_answer.html', context)
 def undeleteQuestion(request, question_id):
     """
     view to undelete Question

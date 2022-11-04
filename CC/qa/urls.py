@@ -12,4 +12,6 @@ urlpatterns=[
     path('undelete_answer/<int:answer_id>/', views.undelete_answer, name='undelete_answer'),
     path('deleteQuestion/<int:question_id>/', views.deleteQuestion, name='deleteQuestion'),
 	path('undeleteQuestion/<int:question_id>/', views.undeleteQuestion, name='undeleteQuestion'),
+    path('edit_answer/<int:answer_id>/', views.edit_answer, name='edit_answer'),
+    path('edit_question/<int:question_id>/', views.edit_question, name='edit_question'),
 ]
