@@ -79,209 +79,226 @@
             </div>
 
         </div>
-        <div id="mainbar">
-            <div class="postcell post-layout--right">
-                {% if data.is_deleted %}
-                <aside class="s-notice s-notice__info post-notice js-post-notice mb16" role="status">
-                    <div class="d-flex fd-column fw-nowrap">
-                        <div class="d-flex fw-nowrap">
-                            <div class="flex--item mr8">
-                                <svg aria-hidden="true" class="svg-icon iconEyeOff" width="18" height="18"
-                                    viewBox="0 0 18 18">
-                                    <path
-                                        d="m5.02 9.44-2.22 2.2C1.63 10.25 1 9 1 9s3-6 8.06-6c.75 0 1.46.14 2.12.38L9.5 5.03a4.01 4.01 0 00-4.48 4.41Zm2.03 3.05A3.99 3.99 0 0013 9c0-.73-.2-1.41-.54-2l-1.51 1.54a2 2 0 01-2.38 2.42l-1.52 1.53Zm7.11-7.22A14.8 14.8 0 0117 9s-3 6-7.94 6c-1.31 0-2.48-.4-3.5-1l-1.97 2L2 14.41 14.59 2 16 3.41l-1.84 1.86Z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div class="flex--item wmn0 fl1 lh-lg">
-                                <div class="flex--item fl1 lh-lg">
-                                    <b>This post is hidden</b>. {{date.post_owner}} deleted this
-                                    post <span dir="ltr" title="{{answer.deleted_time}}"><span
-                                            class="relativetime">{{data.deleted_time}}</span></span>.
 
+        <div id="content" class="snippet-hidden">
+            <div itemprop="mainEntity" itemscope itemtype="https://schema.org/Question">
+                <link itemprop="image" href="#">
+
+                <div class="inner-content clearfix">
+
+                    <div id="question-header" class="d-flex sm:fd-column">
+
+                        <h1 itemprop="name" class="fs-headline1 ow-break-word mb8 flex--item fl1">
+                            {% if data.is_deleted %}
+                            <a href="#" class="question-hyperlink">Post deleted</a>
+                            {% else %}
+                            <a href="#" class="question-hyperlink">{{data.title}}</a>
+                            {% endif%}
+                        </h1>
+
+                        <div class="ml12 aside-cta flex--item print:d-none sm:ml0">
+                            <a href="{% url 'qa:new_question' %}" class="ws-nowrap s-btn s-btn__primary">Ask
+                                Question</a>
+                        </div>
+                    </div>
+
+                    <div id="mainbar" role="main" aria-label="question and answers">
+                        <div class="question {% if data.is_deleted %}deleted-answer{% endif %}"
+                            data-questionid="{{data.id}}" data-position-on-page="0" data-score="1" id="question">
+                            <div class="postcell post-layout--right">
+                                {% if data.is_deleted %}
+                                <aside class="s-notice s-notice__info post-notice js-post-notice mb16" role="status">
+                                    <div class="d-flex fd-column fw-nowrap">
+                                        <div class="d-flex fw-nowrap">
+                                            <div class="flex--item mr8">
+                                                <svg aria-hidden="true" class="svg-icon iconEyeOff" width="18"
+                                                    height="18" viewBox="0 0 18 18">
+                                                    <path
+                                                        d="m5.02 9.44-2.22 2.2C1.63 10.25 1 9 1 9s3-6 8.06-6c.75 0 1.46.14 2.12.38L9.5 5.03a4.01 4.01 0 00-4.48 4.41Zm2.03 3.05A3.99 3.99 0 0013 9c0-.73-.2-1.41-.54-2l-1.51 1.54a2 2 0 01-2.38 2.42l-1.52 1.53Zm7.11-7.22A14.8 14.8 0 0117 9s-3 6-7.94 6c-1.31 0-2.48-.4-3.5-1l-1.97 2L2 14.41 14.59 2 16 3.41l-1.84 1.86Z">
+                                                    </path>
+                                                </svg>
+                                            </div>
+                                            <div class="flex--item wmn0 fl1 lh-lg">
+                                                <div class="flex--item fl1 lh-lg">
+                                                    <b>This post is hidden</b>. {{date.post_owner}} deleted this
+                                                    post <span dir="ltr" title="{{answer.deleted_time}}"><span
+                                                            class="relativetime">{{data.deleted_time}}</span></span>.
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </aside>
+                                {% else %}
+                                <div class="s-prose js-post-body" itemprop="text">
+                                    <p>{{data.body}}</p>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </aside>
-                {% endif %}
-                <div class="s-prose js-post-body" itemprop="text">
-                    <p>{{data.body}}</p>
-                </div>
 
-                <div class="mt24 mb12">
-                    <div class="post-taglist d-flex gs4 gsy fd-column">
-                        <div class="d-flex ps-relative">
-                            {% for tag in data.tags.all %}
-                            <a class="post-tag" title="show questions tagged &#39;{{tag}}&#39;" rel="tag">{{tag}}</a>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mb0 ">
-                    <div class="mt16 d-flex gs8 gsy fw-wrap jc-end ai-start pt4 mb16">
-                        <div class="flex--item mr16 fl1 w96">
-                            <div class="js-post-menu pt2" data-post-id="{{data.id}}">
-                                <div class="d-flex gs8 s-anchors s-anchors__muted fw-wrap">
-
-
-
-                                    {% if canMakeAnotherEdit == True %}
-
-                                    <div class="flex--item">
-                                        <a href="{% url 'qa:edit_question' data.id %}" class="js-suggest-edit-post"
-                                            title="Revise and improve this post">Edit</a>
+                                <div class="mt24 mb12">
+                                    <div class="post-taglist d-flex gs4 gsy fd-column">
+                                        <div class="d-flex ps-relative">
+                                            {% for tag in data.tags.all %}
+                                            <a class="post-tag" title="show questions tagged &#39;{{tag}}&#39;"
+                                                rel="tag">{{tag}}</a>
+                                            {% endfor %}
+                                        </div>
                                     </div>
-
-                                    {% else %}
-                                    <script>
-                                        $(function () {
-                                            $('[data-toggle="popover"]').popover()
-                                        })
-                                    </script>
-
-
-                                    <div class="flex--item">
-                                        <a href="#" data-toggle="popover" title="Previous Edit Waiting for Review"
-                                            data-content="Previous Edit is Waiting for Review. Come Back Later"
-                                            onclick="return false;">Edit Question</a>
-                                    </div>
-
-                                    {% endif %}
-                                    {% if request.user == data.post_owner %}
-                                    {% if data.is_deleted %}
-                                    <div class="flex--item">
-                                        <a>Undelete</a>
-                                    </div>
-                                    {% else %}
-                                    <div class="flex--item">
-                                        <a
-                                            onclick="return confirm('You really want to delete this Question - {{data.title}}');">Delete</a>
-                                    </div>
-                                    {% endif %}
-                                    {% endif %}
-
                                 </div>
-                                <div class="js-menu-popup-container"></div>
-                            </div>
-                        </div>
+                                {% endif %}
+                                <div class="mb0 ">
+                                    <div class="mt16 d-flex gs8 gsy fw-wrap jc-end ai-start pt4 mb16">
+                                        <div class="flex--item mr16 fl1 w96">
+                                            <div class="js-post-menu pt2" data-post-id="{{data.id}}">
+                                                <div class="d-flex gs8 s-anchors s-anchors__muted fw-wrap">
+                                                    <div class="flex--item">
+                                                        <a class="js-suggest-edit-post"
+                                                            title="Revise and improve this post">Edit</a>
+                                                    </div>
+                                                    {% if request.user == data.post_owner %}
+                                                    {% if data.is_deleted %}
+                                                    <div class="flex--item">
+                                                        <a href="{% url 'qa:undeleteQuestion' data.id %}">Undelete</a>
+                                                    </div>
+                                                    {% else %}
+                                                    <div class="flex--item">
+                                                        <a href="{% url 'qa:deleteQuestion' data.id %}"
+                                                            onclick="return confirm('You really want to delete this Question - {{data.title}}');">Delete</a>
+                                                    </div>
+                                                    {% endif %}
+                                                    {% endif %}
+
+                                                </div>
+                                                <div class="js-menu-popup-container"></div>
+                                            </div>
+                                        </div>
 
 
-                        <div class="post-signature owner flex--item">
-                            <div class="user-info ">
-                                <div class="user-action-time">asked <span title="2021-12-08 09:31:57Z"
-                                        class="relativetime">{{data.date}}</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="js-zone-container zone-container-main">
-                <div id="dfp-bmlb"
-                    class="everyonelovesstackoverflow everyoneloves__bot-mid-leaderboard everyoneloves__leaderboard">
-                </div>
-                <div class="js-report-ad-button-container " style="width: 728px"></div>
-            </div>
-            {% for answer in answers %}
-
-
-
-            <a name="{{answer.id}}"></a>
-            <div id="answer-{{answer.id}}" class="answer js-answer {% if answer.is_deleted %}deleted-answer{% endif %}"
-                data-answerid="{{answer.id}}">
-
-
-
-                <div class="post-layout">
-                    <div class="answercell post-layout--right">
-                        {% if answer.is_deleted %}
-                        <aside class="s-notice s-notice__info post-notice js-post-notice mb16" role="status">
-                            <div class="d-flex fd-column fw-nowrap">
-                                <div class="d-flex fw-nowrap">
-                                    <div class="flex--item mr8">
-                                        <svg aria-hidden="true" class="svg-icon iconEyeOff" width="18" height="18"
-                                            viewBox="0 0 18 18">
-                                            <path
-                                                d="m5.02 9.44-2.22 2.2C1.63 10.25 1 9 1 9s3-6 8.06-6c.75 0 1.46.14 2.12.38L9.5 5.03a4.01 4.01 0 00-4.48 4.41Zm2.03 3.05A3.99 3.99 0 0013 9c0-.73-.2-1.41-.54-2l-1.51 1.54a2 2 0 01-2.38 2.42l-1.52 1.53Zm7.11-7.22A14.8 14.8 0 0117 9s-3 6-7.94 6c-1.31 0-2.48-.4-3.5-1l-1.97 2L2 14.41 14.59 2 16 3.41l-1.84 1.86Z">
-                                            </path>
-                                        </svg>
-                                    </div>
-                                    <div class="flex--item wmn0 fl1 lh-lg">
-                                        <div class="flex--item fl1 lh-lg">
-                                            <b>This post is hidden</b>. {{answer.answer_owner}} deleted
-                                            this post <span dir="ltr" title="{{answer.deleted_time}}"><span
-                                                    class="relativetime">{{answer.deleted_time}}</span></span>.
-
+                                        <div class="post-signature owner flex--item">
+                                            <div class="user-info ">
+                                                <div class="user-action-time">asked <span title="2021-12-08 09:31:57Z"
+                                                        class="relativetime">{{data.date}}</span></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </aside>
-                        {% endif %}
+                            <div class="js-zone-container zone-container-main">
+                                <div id="dfp-bmlb"
+                                    class="everyonelovesstackoverflow everyoneloves__bot-mid-leaderboard everyoneloves__leaderboard">
+                                </div>
+                                <div class="js-report-ad-button-container " style="width: 728px"></div>
+                            </div>
+                            {% if data.is_deleted %}
 
-                        <div class="s-prose js-post-body" itemprop="text">
-                            <p>{{answer.body}}</p>
-                        </div>
-                        <div class="mt24">
-                            <div class="d-flex fw-wrap ai-start jc-end gs8 gsy">
-                                <time itemprop="dateCreated" datetime="2021-12-08T09:53:01"></time>
-                                <div class="flex--item mr16" style="flex: 1 1 100px;">
-                                    <div class="js-post-menu pt2" data-post-id="{{answer.id}}">
-                                        <div class="d-flex gs8 s-anchors s-anchors__muted fw-wrap">
+                            {% else %}
+                            {% for answer in answers %}
 
 
-                                            <div class="flex--item">
-                                                <a class="js-suggest-edit-post"
-                                                    title="Revise and improve this post">Edit</a>
+
+                            <a name="{{answer.id}}"></a>
+                            <div id="answer-{{answer.id}}"
+                                class="answer js-answer {% if answer.is_deleted %}deleted-answer{% endif %}"
+                                data-answerid="{{answer.id}}">
+
+
+
+                                <div class="post-layout">
+                                    <div class="answercell post-layout--right">
+                                        {% if answer.is_deleted %}
+                                        <aside class="s-notice s-notice__info post-notice js-post-notice mb16"
+                                            role="status">
+                                            <div class="d-flex fd-column fw-nowrap">
+                                                <div class="d-flex fw-nowrap">
+                                                    <div class="flex--item mr8">
+                                                        <svg aria-hidden="true" class="svg-icon iconEyeOff" width="18"
+                                                            height="18" viewBox="0 0 18 18">
+                                                            <path
+                                                                d="m5.02 9.44-2.22 2.2C1.63 10.25 1 9 1 9s3-6 8.06-6c.75 0 1.46.14 2.12.38L9.5 5.03a4.01 4.01 0 00-4.48 4.41Zm2.03 3.05A3.99 3.99 0 0013 9c0-.73-.2-1.41-.54-2l-1.51 1.54a2 2 0 01-2.38 2.42l-1.52 1.53Zm7.11-7.22A14.8 14.8 0 0117 9s-3 6-7.94 6c-1.31 0-2.48-.4-3.5-1l-1.97 2L2 14.41 14.59 2 16 3.41l-1.84 1.86Z">
+                                                            </path>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex--item wmn0 fl1 lh-lg">
+                                                        <div class="flex--item fl1 lh-lg">
+                                                            <b>This post is hidden</b>. {{answer.answer_owner}} deleted
+                                                            this post <span dir="ltr"
+                                                                title="{{answer.deleted_time}}"><span
+                                                                    class="relativetime">{{answer.deleted_time}}</span></span>.
+
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
+                                        </aside>
 
-                                            {% if request.user == answer.answer_owner %}
-                                            {% if answer.is_deleted %}
-                                            <div class="flex--item">
-                                                <a href="{% url 'qa:undelete_answer' answer.id %}">Undelete</a>
-                                            </div>
-                                            {% else %}
-                                            <div class="flex--item">
-                                                <a onclick="return confirm('You really want to delete answer - {{answer.body|truncatechars:20}}')"
-                                                    href="{% url 'qa:delete_answer' answer.id %}">Delete</a>
-                                            </div>
-                                            {% endif %}
-                                            {% endif %}
+                                        {% else %}
+                                        <div class="s-prose js-post-body" itemprop="text">
+                                            <p>{{answer.body}}</p>
                                         </div>
-                                        <div class="js-menu-popup-container"></div>
+                                        {% endif %}
+                                        <div class="mt24">
+                                            <div class="d-flex fw-wrap ai-start jc-end gs8 gsy">
+                                                <time itemprop="dateCreated" datetime="2021-12-08T09:53:01"></time>
+                                                <div class="flex--item mr16" style="flex: 1 1 100px;">
+                                                    <div class="js-post-menu pt2" data-post-id="{{answer.id}}">
+                                                        <div class="d-flex gs8 s-anchors s-anchors__muted fw-wrap">
+
+
+                                                            <div class="flex--item">
+                                                                <a class="js-suggest-edit-post"
+                                                                    title="Revise and improve this post">Edit</a>
+                                                            </div>
+
+                                                            {% if request.user == answer.answer_owner %}
+                                                            {% if answer.is_deleted %}
+                                                            <div class="flex--item">
+                                                                <a
+                                                                    href="{% url 'qa:undelete_answer' answer.id %}">Undelete</a>
+                                                            </div>
+                                                            {% else %}
+                                                            <div class="flex--item">
+                                                                <a onclick="return confirm('You really want to delete answer - {{answer.body|truncatechars:20}}')"
+                                                                    href="{% url 'qa:delete_answer' answer.id %}">Delete</a>
+                                                            </div>
+                                                            {% endif %}
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="js-menu-popup-container"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="post-signature flex--item fl0">
+                                                    <div class="user-info user-hover">
+                                                        <div class="user-action-time">
+                                                            answered <span title="2021-12-08 09:53:01Z"
+                                                                class="relativetime">{{answer.date}}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+                                    {% endfor %}
+                                </div>
+                                <h2 class="space">Your Answer</h2>
+
+                                <div id="post-editor" class="post-editor js-post-editor">
+                                    <form class="form" method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            {{ form.body }}
+                                        </div>
+                                        <div class="cbt d-flex gsx gs4">
+                                            <button class="flex--item s-btn s-btn__primary" type="submit">Post Your
+                                                Answer</button>
+                                        </div>
+                                    </form>
                                 </div>
 
-                                <div class="post-signature flex--item fl0">
-                                    <div class="user-info user-hover">
-                                        <div class="user-action-time">
-                                            answered <span title="2021-12-08 09:53:01Z"
-                                                class="relativetime">{{answer.date}}</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
-                <h2 class="space">Your Answer</h2>
-
-                <div id="post-editor" class="post-editor js-post-editor">
-                    <form class="form" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            {{ form.body }}
-                        </div>
-                        <div class="cbt d-flex gsx gs4">
-                            <button class="flex--item s-btn s-btn__primary" type="submit">Post Your
-                                Answer</button>
-                        </div>
-                    </form>
-                </div>
-
-
             </div>
         </div>
 </body>

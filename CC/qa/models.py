@@ -10,6 +10,7 @@ class Question(models.Model):
     body = MartorField()
     tags = TaggableManager()
     date = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=False)
     print(tags)
     class Meta:
         ordering = ["-date"]

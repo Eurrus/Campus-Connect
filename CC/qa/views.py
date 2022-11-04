@@ -75,6 +75,35 @@ def undelete_answer(request, answer_id):
     else:
         messages.error(request, 'You are not post owner')
         return redirect('qa:questionDetailView', pk=answer.questionans.id)
+def deleteQuestion(request, question_id):
+    """
+    view to delete question and award badges if user is eligible
+    """
+    question = get_object_or_404(Question, pk=question_id)
+    question.deleted_time = timezone.now()
+    question.save()
+    if request.user == question.post_owner:
+        question.is_deleted = True
+        question.save()
+        return redirect('qa:questionDetailView', pk=question_id)
+    else:
+        messages.error(request, 'You are not the Post Owner')
+        # return JsonResponse({'action':'notPostOwner'})
+        return redirect('qa:questionDetailView', pk=question_id)
+
+
+def undeleteQuestion(request, question_id):
+    """
+    view to undelete Question
+    """
+    question = get_object_or_404(Question, pk=question_id)
+    if request.user == question.post_owner:
+        question.is_deleted = False
+        question.save()
+        return redirect('qa:questionDetailView', pk=question_id)
+    else:
+        messages.error(request, 'You are not post owner')
+        return redirect('qa:questionDetailView', pk=question_id)
 
 
 
