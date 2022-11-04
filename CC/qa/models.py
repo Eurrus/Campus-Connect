@@ -18,3 +18,12 @@ class Question(models.Model):
     def get_absolute_url(self):
         # 'slug':self.slug})
         return reverse('qa:questionDetailView', kwargs={'pk': self.pk, })
+class Answer(models.Model):
+    answer_owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    questionans = models.ForeignKey(Question, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+    body = MartorField()
+    a_vote_ups = models.ManyToManyField(User, related_name='a_vote_up', blank=True)
+    a_vote_downs = models.ManyToManyField(User, related_name='a_vote_down', blank=True)
+    accepted = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)

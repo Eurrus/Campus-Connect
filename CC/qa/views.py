@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Question
-from .forms import QuestionForm
+from .models import Question,Answer
+from .forms import QuestionForm,AnswerForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
+from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
 def questions(request):
@@ -11,19 +12,69 @@ def questions(request):
  questions_count=Question.objects.count()
  context={
     'questions': questions,
-    'questions_count': questions_count,
     }
- print(questions_count)
+
  return render(request, 'qa/Questions_List.html',context)
 def questionDetailView(request, pk,):  # slug):
     data = get_object_or_404(Question, pk=pk)
+    answers_of_questions = data.answer_set.all()
+    STORING_THE_ORIGINAL = []
+    for anss in answers_of_questions:
+        STORING_THE_ORIGINAL.append(anss)
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(STORING_THE_ORIGINAL, 10)
+    try:
+        answers = paginator.page(page)
+    except PageNotAnInteger:
+        answers = paginator.page(1)
+    except EmptyPage:
+        answers = paginator.page(paginator.num_pages)
+    if request.method == 'POST':
+        form = AnswerForm(data=request.POST)
+        if form.is_valid():
+            gettingBody = form.cleaned_data['body']
+            new_post = form.save(commit=False)
+            new_post.answer_owner = request.user
+            new_post.questionans = data
+            data.active_date = timezone.now()
+            data.save()
+            new_post.save()
+            #print(gettingBody)
+    else:
+        form=AnswerForm()  
+        print("hola") 
+        # return render(request, 'qa/questionDetailView.html')    
     context = {
         'data': data,
+        'form' : form,
+        'answers':answers
     }
-    print(data.body)
-    print(data)
     return render(request, 'qa/questionDetailView.html', context)
-
+def delete_answer(request, answer_id):
+    """
+    view to delete Answer
+    """
+    answer = get_object_or_404(Answer, pk=answer_id)
+    if request.user == answer.answer_owner:
+        answer.is_deleted=True
+        answer.save()
+        return redirect('qa:questionDetailView', pk=answer.questionans.id)
+    else:
+        messages.error(request, 'You are not post owner')
+        return redirect('qa:questionDetailView', pk=answer.questionans.id)
+def undelete_answer(request, answer_id):
+    """
+    view to undelete Answer
+    """
+    answer = get_object_or_404(Answer, pk=answer_id)
+    if request.user == answer.answer_owner:
+        answer.is_deleted = False
+        answer.save()
+        return redirect('qa:questionDetailView', pk=answer.questionans.id)
+    else:
+        messages.error(request, 'You are not post owner')
+        return redirect('qa:questionDetailView', pk=answer.questionans.id)
 
 
 
