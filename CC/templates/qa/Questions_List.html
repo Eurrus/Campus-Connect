@@ -55,7 +55,7 @@
             <div class="left-sidebar--sticky-container js-sticky-leftnav">
                 <nav role="navigation">
                     <ol class="nav-links">
-                        <li class="youarehere">
+                        <li>
                             <a href="/" class="pl8 nav-links--link">
                                 <div class="d-flex ai-center">
                                     <div class="flex--item truncate">
@@ -68,7 +68,7 @@
                             <ol class="nav-links">
                                 <li class="fs-fine tt-uppercase ml8 mt16 mb4 fc-light">Public</li>
 
-                                <li class="">
+                                <li class="youarehere">
                                     <a id="nav-questions" href="{% url 'qa:questions' %}"
                                         class="pl8 nav-links--link -link__with-icon">
                                         <i class="fa fa-lg fa-question fa-solid mx-2"> </i>
@@ -118,6 +118,8 @@
                 </div>
                 <div class="d-flex flex-row">
                     {% for question in questions %}
+                    {% if question.is_deleted %}
+                    {% if question.post_owner == user %}
                     <div class="col-lg-6 mx-2 card bg-light mb-3" style="max-width: 18rem;">
                         <div class="card-header"><a href="{{question.get_absolute_url}}" class="link-primary">
                             {{question.title|truncatechars:50}}</a></div>
@@ -127,6 +129,19 @@
                         <div class="card-footer bg-light"><a
                             href="{{question.post_owner.profile.get_absolute_url}}" class="link-primary">{{question.post_owner}}</a></div>
                     </div>
+                    {% endif %}
+                    {% else %}
+                    
+                    <div class="col-lg-6 mx-2 card bg-light mb-3" style="max-width: 18rem;">
+                        <div class="card-header"><a href="{{question.get_absolute_url}}" class="link-primary">
+                            {{question.title|truncatechars:50}}</a></div>
+                        <div class="card-body">
+                          <p class="card-text">{{question.body|truncatechars:200}}</p>
+                        </div>
+                        <div class="card-footer bg-light"><a
+                            href="{{question.post_owner.profile.get_absolute_url}}" class="link-primary">{{question.post_owner}}</a></div>
+                    </div>
+                    {% endif %}
                     {% endfor %}
                 </div>
 
@@ -169,47 +184,6 @@
         </div> 
 
     </div>
-
-    <footer id="footer" class="site-footer js-footer" role="contentinfo">
-        <div class="site-footer--container">
-            <div class="site-footer--logo">
-                <i><img src="{% static 'images/android-chrome-192x192-1.png' %}"></img></i>
-            </div>
-            <nav class="site-footer--nav">
-                <div class="site-footer--col site-footer--col__visible js-footer-col" data-name="default">
-                </div>
-                <div class="site-footer--col site-footer--col__visible js-footer-col" data-name="default">
-                    <h5 class="-title"><a href="">Contact Information</a></h5>
-                    <ul class="-list">
-                        <li class="-item"><a href="" class=" -link">Computer Science and Engineering Department, VNIT
-                                Nagpur</a></li>
-                        <li class="-item"><a href="" class=" -link">Email: cse@vnit.ac.in</a></li>
-                        <li class="-item"><a href="" class=" -link">Phone: +00 112323980</a></li>
-                    </ul>
-                </div>
-                <div class="site-footer--col site-footer--col__visible js-footer-col" data-name="default">
-
-                    <h5 class="-title"><a href="">Creators</a></h5>
-                    <ul class="-list">
-                        <li class="-item"><a class=" -link"
-                                href="https://www.linkedin.com/in/vishakha-vikharankar/">Vishakha Vikharankar</a></li>
-                        <li class="-item"><a class=" -link"
-                                href="https://www.linkedin.com/in/velpucherla-pavithra-8436bb203/">Pavithra
-                                Velpucherla</a></li>
-                        <li class="-item"><a class=" -link"
-                                href="https://www.linkedin.com/in/velpucherla-pavithra-8436bb203/">Priyanka
-                                Borwanker</a></li>
-                        <li class="-item"><a class=" -link"
-                                href="https://www.linkedin.com/in/velpucherla-pavithra-8436bb203/">Appari Shanti</a>
-                        </li>
-
-                    </ul>
-                </div>
-            </nav>
-
-        </div>
-
-    </footer>
 
     <script type="text/javascript" src="{% static 'notification/js/notification.js' %}"></script>
 

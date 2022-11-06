@@ -59,7 +59,7 @@
         <ol class="-secondary d-flex ai-center list-reset h100 user-logged-out"
             role="presentation">
             <li class="-ctas">
-                <a href="{% url 'users:logout_view' %}" class="login-link s-btn s-btn__filled py8" rel="nofollow">Log
+                <a href="{% url 'users:logout_view' %}" class="login-link btn btn-outline-danger py8" rel="nofollow">Log
                     out</a>
 
             </li>
@@ -84,4 +84,36 @@
     </div>
 </header>
 {% block content %}{% endblock content%}
+<footer id="footer" class="site-footer js-footer" role="contentinfo">
+    <div class="site-footer--container">
+        <div class="site-footer--logo">
+            <i><img src="{% static 'images/android-chrome-192x192-1.png' %}"></img></i>
+        </div>
+        <nav class="site-footer--nav">
+            <div class="site-footer--col site-footer--col__visible js-footer-col" data-name="default">
+            </div>
+            <div class="site-footer--col site-footer--col__visible js-footer-col" data-name="default">
+                <h5 class="-title"><a href="">Contact Information</a></h5>
+                <ul class="-list">
+                    <li class="-item"><a href="" class=" -link">Computer Science and Engineering Department, VNIT Nagpur</a></li>
+                    <li class="-item"><a href="" class=" -link">Email: cse@vnit.ac.in</a></li>
+                    <li class="-item"><a href="" class=" -link">Phone: +00 112323980</a></li>
+                </ul>
+            </div>
+            <div class="site-footer--col site-footer--col__visible js-footer-col" data-name="default">
+         
+                <h5 class="-title"><a href="">Creators</a></h5>
+                <ul class="-list">
+                    <li class="-item"><a class=" -link" href="https://www.linkedin.com/in/vishakha-vikharankar/">Vishakha Vikharankar</a></li>
+                    <li class="-item"><a class=" -link" href="https://www.linkedin.com/in/velpucherla-pavithra-8436bb203/">Pavithra Velpucherla</a></li>
+                    <li class="-item"><a class=" -link" href="https://www.linkedin.com/in/velpucherla-pavithra-8436bb203/">Priyanka Borwanker</a></li>
+                    <li class="-item"><a class=" -link" href="https://www.linkedin.com/in/velpucherla-pavithra-8436bb203/">Appari Shanti</a></li>
+                    
+                </ul>
+            </div>
+        </nav>
+        
+    </div>
+
+</footer>
 </html>
