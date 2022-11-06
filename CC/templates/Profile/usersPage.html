@@ -127,6 +127,38 @@
 
 
 
+                <script>
+                    var token = '{{csrf_token}}';
+                    $('#id_search_user').on('input', function (e) {
+                        $('#user_browser').html(`<div class="spinner-border text-warning" role="status">
+                                                <span class="sr-only">Loading...</span>
+                                                </div>`)
+                        $.ajax({
+                            headers: { "X-CSRFToken": token },
+                            url: "{% url 'Profile:Ajax_searchUser' %}",
+                            data: {
+                                'w': $('#id_search_user').val(),
+                            },
+                            method: 'get',
+                            dataType: 'json',
+                            success: function (response) {
+                                $("#user_browser > *").remove();
+
+                                for (result of response.results) {
+                                    $("#user_browser").prepend(`<div id="user_browser" class="d-grid grid__4 lg:grid__3 md:grid__2 sm:grid__1 g12"> ${response.results.map(({ user_name }) => `<div class="grid--item user-info  user-hover">
+                            
+                            <div class="user-details">
+                                <a >${user_name}</a>
+                                <span class="user-location">${user_name}
+                                </span>
+                            </div>
+                        </div>` ).join("")} </div>`)
+
+                                }
+                            }
+                        })
+                    })
+                </script>
 
 
             </div>
