@@ -6,4 +6,5 @@ app_name='Profile'
 urlpatterns=[
     path('',views.home,name="home"),
     path('usersPage/', views.usersPage, name='usersPage'),
+    path('Ajax_searchUser/', views.Ajax_searchUser, name='Ajax_searchUser'),
  ]
