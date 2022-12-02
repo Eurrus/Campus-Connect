@@ -1,10 +1,5 @@
 {% load static %}
-
-
-<html class="html__responsive">
-
-</html>
-
+<html>
 
 <head>
 
@@ -52,35 +47,28 @@
 </head>
 
 <header class="top-bar js-top-bar top-bar__network">
-    <div class="wmx12 mx-auto d-flex ai-center h100" role="menubar">
+    
+    <div class="wmx12 mx-auto d-flex ai-center h-25 justify-content-between" role="menubar">
         <div class="-main flex--item">
-            <a href="#" class="left-sidebar-toggle p0 ai-center jc-center js-left-sidebar-toggle" role="menuitem"
-                aria-haspopup="true" aria-controls="left-sidebar" aria-expanded="false"><span
-                    class="ps-relative"></span></a>
-            <div class="topbar-dialog leftnav-dialog js-leftnav-dialog dno">
-                <div class="left-sidebar js-unpinned-left-sidebar" data-can-be="left-sidebar" data-is-here-when="sm">
-                </div>
-            </div>
+           
             <a href="#" class="-logo">
-                <i class="fab fa-stack-overflow fa-3x"></i>
-                <div class="logo-name">StackOverFlow-<b>Clone</b></div>
+                <i><img src="{% static 'images/android-chrome-192x192-1.png' %}"></img></i>
             </a>
         </div>
         {% if user.is_authenticated %}
-        <ol class="overflow-x-auto ml-auto -secondary d-flex ai-center list-reset h100 user-logged-out"
+        <ol class="-secondary d-flex ai-center list-reset h100 user-logged-out"
             role="presentation">
             <li class="-ctas">
-                <a href="{% url 'users:logout_view' %}" class="login-link s-btn s-btn__filled py8" rel="nofollow">Log
+                <a href="{% url 'users:logout_view' %}" class="login-link btn btn-outline-danger py8" rel="nofollow">Log
                     out</a>
 
             </li>
-            <li class="js-topbar-dialog-corral" role="presentation">
-            </li>
+           
         </ol>
 
 
         {% else %}
-        <ol class="overflow-x-auto ml-auto -secondary d-flex ai-center list-reset h100 user-logged-out"
+        <ol class="-secondary d-flex ai-center list-reset h100 user-logged-out"
             role="presentation">
             <li class="-ctas">
                 <a href="{% url 'users:login_request' %}" class="login-link s-btn s-btn__filled py8" rel="nofollow">Log
@@ -96,3 +84,36 @@
     </div>
 </header>
 {% block content %}{% endblock content%}
+<footer id="footer" class="site-footer js-footer" role="contentinfo">
+    <div class="site-footer--container">
+        <div class="site-footer--logo">
+            <i><img src="{% static 'images/android-chrome-192x192-1.png' %}"></img></i>
+        </div>
+        <nav class="site-footer--nav">
+            <div class="site-footer--col site-footer--col__visible js-footer-col" data-name="default">
+            </div>
+            <div class="site-footer--col site-footer--col__visible js-footer-col" data-name="default">
+                <h5 class="-title"><a href="">Contact Information</a></h5>
+                <ul class="-list">
+                    <li class="-item"><a href="" class=" -link">Computer Science and Engineering Department, VNIT Nagpur</a></li>
+                    <li class="-item"><a href="" class=" -link">Email: cse@vnit.ac.in</a></li>
+                    <li class="-item"><a href="" class=" -link">Phone: +00 112323980</a></li>
+                </ul>
+            </div>
+            <div class="site-footer--col site-footer--col__visible js-footer-col" data-name="default">
+         
+                <h5 class="-title"><a href="">Creators</a></h5>
+                <ul class="-list">
+                    <li class="-item"><a class=" -link" href="https://www.linkedin.com/in/vishakha-vikharankar/">Vishakha Vikharankar</a></li>
+                    <li class="-item"><a class=" -link" href="https://www.linkedin.com/in/velpucherla-pavithra-8436bb203/">Pavithra Velpucherla</a></li>
+                    <li class="-item"><a class=" -link" href="https://www.linkedin.com/in/velpucherla-pavithra-8436bb203/">Priyanka Borwanker</a></li>
+                    <li class="-item"><a class=" -link" href="https://www.linkedin.com/in/velpucherla-pavithra-8436bb203/">Appari Shanti</a></li>
+                    
+                </ul>
+            </div>
+        </nav>
+        
+    </div>
+
+</footer>
+</html>
