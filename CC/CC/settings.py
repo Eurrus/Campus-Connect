@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django_extensions',
     'taggit',
     'Profile',
     'users',
@@ -108,6 +109,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
+}
+
+GRAPH_MODELS = {
+  'app_labels': ["Profile", "qa", "CC"],
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
