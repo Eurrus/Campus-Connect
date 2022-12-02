@@ -1,7 +1,5 @@
-{% extends 'Profile/base.html' %}
 {% load static %}
 
-{% block content %}
 <!DOCTYPE html>
 
 
@@ -9,6 +7,33 @@
 
 <head>
     <title>{{ data.title}}</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script async src="https://cdn.sstatic.net/Js/third-party/stacks/stacks.min.js?v=4c00f8ce1b14"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Shared/stacks.css?v=556e4333f24c">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.sstatic.net/Sites/stackoverflow/primary.css?v=753a90643fc4">
+
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.sstatic.net/Sites/stackoverflow/secondary.css?v=12f70c5b46fe">
+
+
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Shared/Channels/channels.css?v=47a5e0f03c81">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="{% static 'plugins/css/bootstrap.min.css' %}" type="text/css" media="all" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+        integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css 
+    " crossorigin="anonymous">
+
+
+    <link href="https://cdn.jsdelivr.net/gh/hung1001/font-awesome-pro@4cac1a6/css/all.css" rel="stylesheet"
+        type="text/css" />
+
     <link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Shared/stacks.css?v=15473555f232">
     <link rel="stylesheet" type="text/css"
         href="https://cdn.sstatic.net/Sites/stackoverflow/primary.css?v=de9fb8b74f61">
@@ -27,7 +52,7 @@
             <div class="left-sidebar--sticky-container js-sticky-leftnav">
                 <nav role="navigation">
                     <ol class="nav-links">
-                        <li class="youarehere">
+                        <li>
                             <a href="/" class="pl8 nav-links--link">
                                 <div class="d-flex ai-center">
                                     <div class="flex--item truncate">
@@ -40,33 +65,31 @@
                             <ol class="nav-links">
                                 <li class="fs-fine tt-uppercase ml8 mt16 mb4 fc-light">Public</li>
 
-                                <li class="">
+                                <li class="youarehere">
                                     <a id="nav-questions" href="{% url 'qa:questions' %}"
                                         class="pl8 nav-links--link -link__with-icon">
-                                        <svg aria-hidden="true" class="svg-icon iconGlobe" width="18" height="18"
-                                            viewBox="0 0 18 18">
-                                            <path
-                                                d="M9 1C4.64 1 1 4.64 1 9c0 4.36 3.64 8 8 8 4.36 0 8-3.64 8-8 0-4.36-3.64-8-8-8ZM8 15.32a6.46 6.46 0 01-4.3-2.74 6.46 6.46 0 01-.93-5.01L7 11.68v.8c0 .88.12 1.32 1 1.32v1.52Zm5.72-2c-.2-.66-1-1.32-1.72-1.32h-1v-2c0-.44-.56-1-1-1H6V7h1c.44 0 1-.56 1-1V5h2c.88 0 1.4-.72 1.4-1.6v-.33a6.45 6.45 0 013.83 4.51 6.45 6.45 0 01-1.51 5.73v.01Z" />
-                                        </svg>
+                                        <i class="fa fa-lg fa-question fa-solid mx-2"> </i>
                                         <span class="-link--channel-name">Questions</span>
                                     </a>
                                 </li>
 
 
                                 <li class="">
-                                    <a id="nav-tags" class="nav-links--link">
+                                    <a id="nav-tags" class="nav-links--link" href="{% url 'Profile:usersPage' %}">
                                         <div class="d-flex ai-center">
-                                            <div class="flex--item truncate">Tags</div>
+
+                                            <div class="flex--item truncate"><i class="fa fa-lg fa-tag fa-solid mx-2">
+                                                </i>Tags</div>
                                         </div>
                                     </a>
                                 </li>
 
 
                                 <li class="">
-                                    <a id="nav-users" class="nav-links--link">
-                                        <div class="d-flex ai-center">
-                                            <div class="flex--item truncate">Users</div>
-                                        </div>
+                                    <a id="nav-questions" href="{% url 'Profile:usersPage' %}"
+                                        class="pl8 nav-links--link -link__with-icon">
+                                        <i class="fa fa-lg fa-user fa-solid mx-2"> </i>
+                                        <span class="-link--channel-name">Users</span>
                                     </a>
                                 </li>
 
@@ -150,11 +173,13 @@
                                         <div class="flex--item mr16 fl1 w96">
                                             <div class="js-post-menu pt2" data-post-id="{{data.id}}">
                                                 <div class="d-flex gs8 s-anchors s-anchors__muted fw-wrap">
+                                                    {% if request.user == data.post_owner %}
                                                     <div class="flex--item">
                                                         <a class="js-suggest-edit-post"
                                                             href="{% url 'qa:edit_question' data.id %}"
                                                             title="Revise and improve this post">Edit</a>
                                                     </div>
+                                                    {% endif %}
                                                     {% if request.user == data.post_owner %}
                                                     {% if data.is_deleted %}
                                                     <div class="flex--item">
@@ -306,4 +331,3 @@
 </body>
 
 </html>
-{% endblock content %}

@@ -12,6 +12,7 @@ def questions(request):
  questions_count=Question.objects.count()
  context={
     'questions': questions,
+    'user':request.user,
     }
 
  return render(request, 'qa/Questions_List.html',context)
