@@ -128,6 +128,7 @@
                     <div id="mainbar" role="main" aria-label="question and answers">
                         <div class="question {% if data.is_deleted %}deleted-answer{% endif %}"
                             data-questionid="{{data.id}}" data-position-on-page="0" data-score="1" id="question">
+
                             <div class="postcell post-layout--right">
                                 {% if data.is_deleted %}
                                 <aside class="s-notice s-notice__info post-notice js-post-notice mb16" role="status">
@@ -154,6 +155,47 @@
                                 </aside>
                                 {% else %}
                                 <div class="s-prose js-post-body" itemprop="text">
+                                    <div class="votecell post-layout--left">
+                                        <div class="js-voting-container d-flex jc-center fd-column ai-stretch gs4 fc-black-200"
+                                            data-post-id="{{data.id}}">
+                                            <form method="GET" class="likeForm d-inline"
+                                                action="{% url 'qa:question_upvote_downvote' data.id %}"
+                                                data-pk="{{ data.id }}">
+                                                <div id="id_likes{{data.id}}">
+                                                    {% if request.user == likepost.upvote_by_q %}
+                                                    <button name='submit' type='submit' value="like"><i
+                                                            class="fas active fa-sort-up fa-4x"></i></button>
+                                                    {% else %}
+                                                    <button name='submit' type='submit' value="like"><i
+                                                            class="fas inactive fa-sort-up fa-4x"></i></button>
+                                                    {% endif %}
+
+                                                    <div
+                                                        class="flex--item d-flex fd-column ai-center color-black fs-title">
+
+                                                        <div class="showVoteCount">{{ data.calculate_UpVote_DownVote }}
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </form>
+
+                                            <div class="result-div"></div>
+
+                                            <form action="{% url 'qa:question_upvote_downvote' data.id %}" method="GET"
+                                                class="d-inline dislikeForm" data-pk="{{ data.id }}">
+                                                <div id="id_dislikes{{data.id}}">
+                                                    {% if request.user == likeDownpost.downvote_by_q %}
+                                                    <button name='submit' type='submit' value="dislike"><i
+                                                            class="fas voteDownActive fa-sort-down fa-4x"></i></button>
+                                                    {% else %}
+                                                    <button name='submit' type='submit' value="dislike"><i
+                                                            class="fas voteDownInActive fa-sort-down fa-4x"></i></button>
+                                                    {% endif %}
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                     <p>{{data.body}}</p>
                                 </div>
 
@@ -179,6 +221,9 @@
                                                             href="{% url 'qa:edit_question' data.id %}"
                                                             title="Revise and improve this post">Edit</a>
                                                     </div>
+
+
+
                                                     {% endif %}
                                                     {% if request.user == data.post_owner %}
                                                     {% if data.is_deleted %}
@@ -192,7 +237,12 @@
                                                     </div>
                                                     {% endif %}
                                                     {% endif %}
-
+                                                    <div class="flex--item">
+                                                        <a data-bs-toggle="modal"
+                                                            title="Flag this post for serious problems or moderator attention"
+                                                            href="#myModal"
+                                                            class="s-flag-post-link s-btn s-btn__link">Flag</a>
+                                                    </div>
                                                 </div>
                                                 <div class="js-menu-popup-container"></div>
                                             </div>
@@ -286,6 +336,7 @@
                                                                 <a onclick="return confirm('You really want to delete answer - {{answer.body|truncatechars:20}}')"
                                                                     href="{% url 'qa:delete_answer' answer.id %}">Delete</a>
                                                             </div>
+
                                                             {% endif %}
                                                             {% endif %}
                                                         </div>
@@ -329,5 +380,70 @@
             </div>
         </div>
 </body>
+<div class="modal flag-model" id="myModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">I am flagging to report this question as...</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="container"></div>
+            <div class="modal-body">
+
+                <form method="GET" id="flag-form-ajax">
+                    {% csrf_token %}
+
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="actions_Flag_Q" value="SPAM"
+                            id="id_actions_Flag_Q_1" required>
+                        <label class="form-check-label" for="id_actions_Flag_Q_1">
+                            <b>Spam</b>
+                            <br>
+                            <h6 class="flag-description">Exists only to promote a product or service, does not
+                                disclose the author's affiliation.</h6>
+                        </label>
+                    </div>
+                    <br>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="actions_Flag_Q" value="RUDE_OR_ABUSIVE"
+                            id="id_actions_Flag_Q_2" required>
+                        <label class="form-check-label" for="id_actions_Flag_Q_2">
+                            <b>Rude or Abusive</b>
+                            <h6 class="flag-description">A reasonable person would find this content inappropriate
+                                for respectful discourse.</h6>
+                        </label>
+                    </div>
+                    <br>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" data-bs-toggle="modal" href="#myModal2"
+                            name="actions_Flag_Q" value="NEEDS_IMPROVEMENT" id="id_actions_Flag_Q_6" required>
+                        <label class="form-check-label" for="id_actions_Flag_Q_6">
+                            <b>Needs Improvement</b>
+                            <h6 class="flag-description">This question needs updates from the author in order to be
+                                answered well or belongs on another Stack Exchange site.</h6>
+                        </label>
+                    </div>
+                    <br>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="actions_Flag_Q"
+                            value="IN_NEED_OF_MODERATOR_INTERVATION" id="id_actions_Flag_Q_4" required>
+                        <label class="form-check-label" for="id_actions_Flag_Q_4">In Need of Moderator
+                            Intervation</label>
+                    </div>
+
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="actions_Flag_Q" value="DUPLICATE"
+                            id="id_actions_Flag_Q_7" required>
+                        <label class="form-check-label" for="id_actions_Flag_Q_7">Duplicate</label>
+                    </div>
+
+            </div>
+            <div class="modal-footer">
+                <a href="#" data-bs-dismiss="modal" class="btn btn-outline-dark">Close</a>
+                <button type="submit" class="btn btn-primary">Save changes</a></button>
+            </div>
+        </div>
+    </div>
+</div>
 
 </html>

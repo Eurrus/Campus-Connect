@@ -6,6 +6,8 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from .models import QUpvote,QDownvote
+from datetime import timedelta
 # Create your views here.
 def questions(request):
  questions = Question.objects.all()
@@ -91,6 +93,363 @@ def deleteQuestion(request, question_id):
         messages.error(request, 'You are not the Post Owner')
         # return JsonResponse({'action':'notPostOwner'})
         return redirect('qa:questionDetailView', pk=question_id)
+@login_required
+def question_upvote_downvote(request, question_id):
+    post = get_object_or_404(Question, pk=question_id)
+    likepost = post.qupvote_set.filter(upvote_by_q=request.user).first()
+    downVotedPost = post.qdownvote_set.filter(
+        downvote_by_q=request.user).first()
+    upvote_time_limit = timezone.now() - timedelta(minutes=5)
+    
+    # Upvote
+    if request.GET.get('submit') == 'like':
+        print("upvote")
+        if QDownvote.objects.filter(
+                downvote_by_q=request.user,
+                downvote_question_of=post).exists():
+
+            if downVotedPost.date > upvote_time_limit:
+                QDownvote.objects.filter(
+                    downvote_by_q=request.user,
+                    downvote_question_of=post).delete()
+                m = QUpvote(upvote_by_q=request.user, upvote_question_of=post)
+                m.save()
+                return JsonResponse({'action': 'undislike_and_like'})
+            else:
+                return JsonResponse({'action': 'voteError'})
+
+        elif QUpvote.objects.filter(upvote_by_q=request.user, upvote_question_of=post).exists():
+            if likepost.date > upvote_time_limit :
+                QUpvote.objects.filter(
+                    upvote_by_q=request.user,
+                    upvote_question_of=post).delete()
+                if post.qdownvote_set.all().count() >= 5:
+                    post.reversal_monitor = True
+                    post.save()
+                return JsonResponse({'action': 'unlike'})
+            else:
+                return JsonResponse({'action': 'voteError'})
+        else:
+            if request.user == post.post_owner:
+                print("Hola mamamiyaa   adios")
+                return JsonResponse({'action': 'cannotLikeOwnPost'})
+            else:
+                print("else")
+                # post.q_reputation += 10
+                # post.save()
+                created = QUpvote(
+                        upvote_by_q=request.user,
+                        upvote_question_of=post)
+                created.save()
+                print("Hola mamamiyaa")
+                return JsonResponse({'action': 'like_only'})        
+    elif request.GET.get('submit') == 'dislike':
+        print("downvote")
+        if QUpvote.objects.filter(
+                upvote_by_q=request.user,
+                upvote_question_of=post).exists():
+            if likepost.date > upvote_time_limit :
+                m = QDownvote(
+                    downvote_by_q=request.user,
+                    downvote_question_of=post)
+                m.save()
+                print("m.save()")
+                QUpvote.objects.filter(
+                    upvote_by_q=request.user,
+                    upvote_question_of=post).delete()
+                if post.qdownvote_set.all().count() >= 5:
+                    post.reversal_monitor = True
+                    post.save()
+                return JsonResponse({'action': 'unlike_and_dislike'})
+            else:
+                return JsonResponse({'action': 'voteError'})
+        elif QDownvote.objects.filter(downvote_by_q=request.user, downvote_question_of=post).exists():
+            if downVotedPost.date > upvote_time_limit :
+                QDownvote.objects.filter(
+                    downvote_by_q=request.user,
+                    downvote_question_of=post).delete()
+                
+                return JsonResponse({'action': 'undislike'})
+            else:
+                return JsonResponse({'action': 'voteError'})
+
+        else:
+            if request.user == post.post_owner:
+                
+                return JsonResponse({'action': 'cannotLikeOwnPost'})
+            else:
+                    created = QDownvote(
+                        downvote_by_q=request.user,
+                        downvote_question_of=post)
+                    created.save()
+                    return JsonResponse({'action': 'dislike_only'})
+
+def AjaxFlagForm(request, question_id):
+    """
+    Ajax form to submit Question's Flag
+    """
+    data = get_object_or_404(Question, pk=question_id)
+
+    getCreateFlag_object = FlagPost.objects.filter(
+        question_forFlag=data).exclude(
+        ended=True).first()
+
+    if request.method == 'POST':
+        Flag_Form = FlagQuestionForm(data=request.POST)
+        if Flag_Form.is_valid():
+            new_post = Flag_Form.save(commit=False)
+            formData = Flag_Form.cleaned_data['actions_Flag_Q']
+
+            if request.user.profile.flag_posts:
+                if formData == "SPAM" or formData == "RUDE_OR_ABUSIVE":
+                    getCreateFlag_object = FlagPost.objects.filter(question_forFlag=data).filter(
+                        Q(actions_Flag_Q="SPAM") | Q(actions_Flag_Q="RUDE_OR_ABUSIVE")).exclude(ended=True).first()
+                    if getCreateFlag_object:
+                        print("First Statement is Excecuting")
+                        new_post.flagged_by = request.user
+                        new_post.question_forFlag = data
+                        new_post.save()
+                        getCreateFlag_object.how_many_votes_on_spamANDRude += 1
+                        getCreateFlag_object.save()
+                        TagBadge.objects.get_or_create(
+                            awarded_to_user=request.user,
+                            badge_type="BRONZE",
+                            tag_name="Citizen Patrol",
+                            bade_position="BADGE",
+                            questionIf_TagOf_Q=data)
+                        # return redirect('qa:questionDetailView', pk=data.id)
+                        PrivRepNotification.objects.get_or_create(
+                            for_user=request.user,
+                            url="#",
+                            type_of_PrivNotify="BADGE_EARNED",
+                            for_if="Citizen Patrol",
+                            description="First flagged post"
+                        )
+
+                    else:
+                        print("Second Statement is Excecuting")
+                        new_post.flagged_by = request.user
+                        new_post.question_forFlag = data
+                        new_post.how_many_votes_on_spamANDRude += 1
+                        new_post.save()
+                        TagBadge.objects.get_or_create(
+                            awarded_to_user=request.user,
+                            badge_type="BRONZE",
+                            tag_name="Citizen Patrol",
+                            bade_position="BADGE")
+                        # createReviewInstance,created = ReviewFlagPost.objects.get_or_create(flag_question_to_view=data)
+                        # createReviewInstance.flag_reviewed_by.add(request.user)
+                        # return redirect('qa:questionDetailView', pk=data.id)
+                        PrivRepNotification.objects.get_or_create(
+                            for_user=request.user,
+                            url="#",
+                            type_of_PrivNotify="BADGE_EARNED",
+                            for_if="Citizen Patrol",
+                            description="First flagged post"
+                        )
+
+                elif formData == "VERY_LOW_QUALITY":
+                    getCreateFlag_object = FlagPost.objects.filter(
+                        question_forFlag=data,
+                        actions_Flag_Q="VERY_LOW_QUALITY").exclude(
+                        ended=True).first()
+                    if getCreateFlag_object:
+                        print("Third Statement is Excecuting")
+                        new_post.flagged_by = request.user
+                        new_post.question_forFlag = data
+                        new_post.save()
+                        # getCreateFlag_object.how_many_votes_on_notAnAnswer += 1
+                        getCreateFlag_object.save()
+                        # createReviewInstance,created = ReviewFlagPost.objects.get_or_create(flag_question_to_view=data, flag_of=new_post)
+                        # createReviewInstance.flag_reviewed_by.add(request.user)
+                        TagBadge.objects.get_or_create(
+                            awarded_to_user=request.user,
+                            badge_type="BRONZE",
+                            tag_name="Citizen Patrol",
+                            bade_position="BADGE")
+                        create_Low_Quality_Post_Instance, cre = LowQualityPostsCheck.objects.get_or_create(
+                            suggested_by=request.user, low_is=data, why_low_quality="Very Low Quality", suggested_through="User")
+                        createLowQualityReviewInstance = ReviewLowQualityPosts.objects.get_or_create(
+                            review_of=create_Low_Quality_Post_Instance, is_question=data)
+                        # return redirect('qa:questionDetailView', pk=data.id)
+                        PrivRepNotification.objects.get_or_create(
+                            for_user=request.user,
+                            url="#",
+                            type_of_PrivNotify="BADGE_EARNED",
+                            for_if="Citizen Patrol",
+                            description="First flagged post"
+                        )
+
+                    else:
+                        print("Fourth Statement is Excecuting")
+                        new_post.flagged_by = request.user
+                        new_post.question_forFlag = data
+                        # new_post.how_many_votes_on_notAnAnswer += 1
+                        new_post.save()
+                        TagBadge.objects.get_or_create(
+                            awarded_to_user=request.user,
+                            badge_type="BRONZE",
+                            tag_name="Citizen Patrol",
+                            bade_position="BADGE")
+                        create_Low_Quality_Post_Instance, cre = LowQualityPostsCheck.objects.get_or_create(
+                            suggested_by=request.user, low_is=data, why_low_quality="Very Low Quality", suggested_through="User")
+                        ReviewLowQualityPosts.objects.get_or_create(
+                            review_of=create_Low_Quality_Post_Instance, is_question=data)
+                        # createReviewInstance,created = ReviewFlagPost.objects.get_or_create(flag_question_to_view=data, flag_of=new_post)
+                        # createReviewInstance.flag_reviewed_by.add(request.user)
+                        # return redirect('qa:questionDetailView', pk=data.id)
+
+                        PrivRepNotification.objects.get_or_create(
+                            for_user=request.user,
+                            url="#",
+                            type_of_PrivNotify="BADGE_EARNED",
+                            for_if="Citizen Patrol",
+                            description="First flagged post"
+                        )
+
+                elif formData == "IN_NEED_OF_MODERATOR_INTERVATION" or formData == "ABOUT_PROFESSIONAL":
+                    getCreateFlag_object = FlagPost.objects.filter(
+                        question_forFlag=data).filter(
+                        Q(
+                            actions_Flag_Q="IN_NEED_OF_MODERATOR_INTERVATION") | Q(
+                            actions_Flag_Q="ABOUT_PROFESSIONAL")).exclude(
+                        ended=True).first()
+                    if getCreateFlag_object:
+                        messages.error(
+                            request, 'Previous Flag is Waiting for Review')
+                    else:
+                        new_post.flagged_by = request.user
+                        new_post.question_forFlag = data
+                        new_post.save()
+                        TagBadge.objects.get_or_create(
+                            awarded_to_user=request.user,
+                            badge_type="BRONZE",
+                            tag_name="Citizen Patrol",
+                            bade_position="BADGE")
+                        createReviewInstance, created = ReviewFlagPost.objects.get_or_create(
+                            flag_question_to_view=data, flag_of=new_post)
+                        createReviewInstance.flag_reviewed_by = request.user
+                        PrivRepNotification.objects.get_or_create(
+                            for_user=request.user,
+                            url="#",
+                            type_of_PrivNotify="BADGE_EARNED",
+                            for_if="Citizen Patrol",
+                            description="First flagged post"
+                        )
+
+                # elif formData == "DUPLICATE" or formData == "OPINION_BASED"
+                # or formData == "NEED_MORE_FOCUS" or formData ==
+                # "NEED_ADDITIONAL_DETAILS" or formData == "NEED_DEBUGGING" or
+                # formData == "NOT_REPRODUCIBLE" or formData ==
+                # "BLANTANLTY_OR_CLARITY" or formData ==
+                # "SEEKING_RECCOMENDATIONS" or:
+                else:
+                    # print("This Statement is Excecuting")
+                    getCreateFlag_object = FlagPost.objects.filter(
+                        question_forFlag=data).filter(
+                        Q(
+                            actions_Flag_Q="DUPLICATE") | Q(
+                            actions_Flag_Q="OPINION_BASED") | Q(
+                            actions_Flag_Q="NEED_MORE_FOCUS") | Q(
+                            actions_Flag_Q="NEED_ADDITIONAL_DETAILS") | Q(
+                            actions_Flag_Q="NEED_DEBUGGING") | Q(
+                                actions_Flag_Q="NOT_REPRODUCIBLE") | Q(
+                                    actions_Flag_Q="BLANTANLTY_OR_CLARITY") | Q(
+                                        actions_Flag_Q="ABOUT_GENERAL_COMPUTING_HAR")).exclude(
+                                            ended=True).first()
+                    if getCreateFlag_object:
+                        print("Last Second Statement is Excecuting")
+                        new_post.flagged_by = request.user
+                        new_post.question_forFlag = data
+
+                        createLowInstance, cre = CloseQuestionVotes.objects.get_or_create(
+                            user=request.user, question_to_closing=data, why_closing="Duplicate", ended=False)
+                        # getInstanceNow = CloseQuestionVotes.objects.filter(id=createLowInstance)
+                        print(createLowInstance.id)
+                        createInstance, created = ReviewCloseVotes.objects.get_or_create(
+                            question_to_closed=data)
+                        createInstance.review_of = createLowInstance
+                        createInstance.save()
+
+                        new_post.save()
+                        getCreateFlag_object.how_many_votes_on_others += 1
+                        getCreateFlag_object.save()
+                        TagBadge.objects.get_or_create(
+                            awarded_to_user=request.user,
+                            badge_type="BRONZE",
+                            tag_name="Citizen Patrol",
+                            bade_position="BADGE")
+                        createReviewInstance, created = ReviewFlagPost.objects.get_or_create(
+                            flag_question_to_view=data)
+                        createReviewInstance.flag_reviewed_by = request.user
+                        # createInstance.review_of = createLowInstance
+                        # return redirect('qa:questionDetailView', pk=data.id)
+                        PrivRepNotification.objects.get_or_create(
+                            for_user=request.user,
+                            url="#",
+                            type_of_PrivNotify="BADGE_EARNED",
+                            for_if="Citizen Patrol",
+                            description="First flagged post"
+                        )
+
+                    else:
+                        print("Last Statement is Excecuting")
+                        new_post.flagged_by = request.user
+                        new_post.question_forFlag = data
+                        new_post.how_many_votes_on_others += 1
+                        new_post.save()
+                        createReviewInstance, created = ReviewFlagPost.objects.get_or_create(
+                            flag_question_to_view=data)
+                        createReviewInstance.flag_reviewed_by = request.user
+
+                        create_Low_Quality_Post_Instance, cre = CloseQuestionVotes.objects.get_or_create(
+                            user=request.user, question_to_closing=data, why_closing="Duplicate", ended=False)
+                        createInstance, created = ReviewCloseVotes.objects.get_or_create(
+                            question_to_closed=data)
+                        TagBadge.objects.get_or_create(
+                            awarded_to_user=request.user,
+                            badge_type="BRONZE",
+                            tag_name="Citizen Patrol",
+                            bade_position="BADGE")
+                        createInstance.review_of = create_Low_Quality_Post_Instance
+                        createInstance.save()
+                        # return redirect('qa:questionDetailView', pk=data.id)
+                        PrivRepNotification.objects.get_or_create(
+                            for_user=request.user,
+                            url="#",
+                            type_of_PrivNotify="BADGE_EARNED",
+                            for_if="Citizen Patrol",
+                            description="First flagged post"
+                        )
+
+                # elif formData == "ABOUT_GENERAL_COMPUTING_HAR" or formData == "ABOUT_PROFESSIONAL":
+                #         new_post.flagged_by = request.user
+                #         new_post.question_forFlag = data
+                #         new_post.save()
+
+                # else:
+                    # messages.error(request, "Response is Out Of Network")
+
+                # new_post.user = request.user
+                # new_post.question_forFlag = data
+                # new_post.save()
+                # return redirect('qa:questionDetailView', pk=data.id,)  #
+                # slug=slug)
+                ser_instance = serializers.serialize('json', [
+                    new_post,
+                ])
+                # send to client side.
+                return JsonResponse({"action": "saved"}, status=200)
+            else:
+                return JsonResponse({'action': "lackOfPrivelege"})
+            # else:
+                # return JsonResponse({"action": "cannotCreate"}, status=200)
+        else:
+            # some form errors occured.
+            return JsonResponse({"error": Flag_Form.errors}, status=400)
+
+    # errors occured (if occured)
+    return JsonResponse({"error": ""}, status=400)
 @login_required
 def edit_question(request, question_id):
     post = Question.objects.get(id=question_id)
