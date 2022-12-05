@@ -379,71 +379,81 @@
                 </div>
             </div>
         </div>
-</body>
-<div class="modal flag-model" id="myModal">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">I am flagging to report this question as...</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
-            </div>
-            <div class="container"></div>
-            <div class="modal-body">
 
-                <form method="GET" id="flag-form-ajax">
-                    {% csrf_token %}
+        <div class="modal flag-model" id="myModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">I am flagging to report this question as...</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="container"></div>
+                    <div class="modal-body">
+                        <form method="POST" id="flag-form-ajax" action="{% url 'qa:AjaxFlagForm' data.id %}">
+                            {% csrf_token %}
 
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" name="actions_Flag_Q" value="SPAM"
-                            id="id_actions_Flag_Q_1" required>
-                        <label class="form-check-label" for="id_actions_Flag_Q_1">
-                            <b>Spam</b>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" name="actions_Flag_Q" value="SPAM"
+                                    id="id_actions_Flag_Q_1" required>
+                                <label class="form-check-label" for="id_actions_Flag_Q_1">
+                                    <b>Spam</b>
+                                    <br>
+                                    <h6 class="flag-description">Exists only to promote a product or service, does not
+                                        disclose the author's affiliation.</h6>
+                                </label>
+                            </div>
                             <br>
-                            <h6 class="flag-description">Exists only to promote a product or service, does not
-                                disclose the author's affiliation.</h6>
-                        </label>
-                    </div>
-                    <br>
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" name="actions_Flag_Q" value="RUDE_OR_ABUSIVE"
-                            id="id_actions_Flag_Q_2" required>
-                        <label class="form-check-label" for="id_actions_Flag_Q_2">
-                            <b>Rude or Abusive</b>
-                            <h6 class="flag-description">A reasonable person would find this content inappropriate
-                                for respectful discourse.</h6>
-                        </label>
-                    </div>
-                    <br>
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" data-bs-toggle="modal" href="#myModal2"
-                            name="actions_Flag_Q" value="NEEDS_IMPROVEMENT" id="id_actions_Flag_Q_6" required>
-                        <label class="form-check-label" for="id_actions_Flag_Q_6">
-                            <b>Needs Improvement</b>
-                            <h6 class="flag-description">This question needs updates from the author in order to be
-                                answered well or belongs on another Stack Exchange site.</h6>
-                        </label>
-                    </div>
-                    <br>
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" name="actions_Flag_Q"
-                            value="IN_NEED_OF_MODERATOR_INTERVATION" id="id_actions_Flag_Q_4" required>
-                        <label class="form-check-label" for="id_actions_Flag_Q_4">In Need of Moderator
-                            Intervation</label>
-                    </div>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" name="actions_Flag_Q"
+                                    value="RUDE_OR_ABUSIVE" id="id_actions_Flag_Q_2" required>
+                                <label class="form-check-label" for="id_actions_Flag_Q_2">
+                                    <b>Rude or Abusive</b>
+                                    <h6 class="flag-description">A reasonable person would find this content
+                                        inappropriate
+                                        for respectful discourse.</h6>
+                                </label>
+                            </div>
+                            <br>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" data-bs-toggle="modal" href="#myModal2"
+                                    name="actions_Flag_Q" value="NEEDS_IMPROVEMENT" id="id_actions_Flag_Q_6" required>
+                                <label class="form-check-label" for="id_actions_Flag_Q_6">
+                                    <b>Needs Improvement</b>
+                                    <h6 class="flag-description">This question needs updates from the author in order to
+                                        be
+                                        answered well or belongs on another Stack Exchange site.</h6>
+                                </label>
+                            </div>
+                            <br>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" name="actions_Flag_Q"
+                                    value="IN_NEED_OF_MODERATOR_INTERVATION" id="id_actions_Flag_Q_4" required>
+                                <label class="form-check-label" for="id_actions_Flag_Q_4">In Need of Moderator
+                                    Intervation</label>
+                            </div>
 
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" name="actions_Flag_Q" value="DUPLICATE"
-                            id="id_actions_Flag_Q_7" required>
-                        <label class="form-check-label" for="id_actions_Flag_Q_7">Duplicate</label>
-                    </div>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" name="actions_Flag_Q" value="DUPLICATE"
+                                    id="id_actions_Flag_Q_7" required>
+                                <label class="form-check-label" for="id_actions_Flag_Q_7">Duplicate</label>
+                            </div>
 
-            </div>
-            <div class="modal-footer">
-                <a href="#" data-bs-dismiss="modal" class="btn btn-outline-dark">Close</a>
-                <button type="submit" class="btn btn-primary">Save changes</a></button>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="" data-bs-dismiss="modal" class="btn btn-outline-dark">Close</a>
+                        <button type="submit" class="btn btn-primary">Save changes</a></button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+        <script type="text/javascript">
+            $(document).click(function () {
+                $('#myModal').show();
+            });
+        </script>
+</body>
+
+
+
 
 </html>

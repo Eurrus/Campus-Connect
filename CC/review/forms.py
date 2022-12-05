@@ -1,7 +1,6 @@
 from django import forms
+from review.models import FlagPost
 class FlagQuestionForm(forms.ModelForm):
-	# like = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect)
-
 	class Meta:
 		model = FlagPost
 		fields = ['actions_Flag_Q']

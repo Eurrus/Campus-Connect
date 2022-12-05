@@ -6,7 +6,6 @@ from django.utils import timezone
 from datetime import timedelta
 from qa.models import Answer,Question
 from simple_history.models import HistoricalRecords
-from qa.models import CommentQ
 # Create your models here.
 Q_Flags_Choices = [
 

@@ -21,5 +21,6 @@ urlpatterns = [
     path('', include('Profile.urls')),
       path('', include('qa.urls')),
     path(r'accounts/',include('users.urls')),
+    path('', include('review.urls')),
   
 ]
