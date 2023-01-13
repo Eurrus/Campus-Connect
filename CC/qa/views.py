@@ -186,7 +186,6 @@ def question_upvote_downvote(request, question_id):
                         downvote_question_of=post)
                     created.save()
                     return JsonResponse({'action': 'dislike_only'})
-
 def AjaxFlagForm(request, question_id):
     data = get_object_or_404(Question, pk=question_id)
     getCreateFlag_object = FlagPost.objects.filter(
@@ -197,86 +196,87 @@ def AjaxFlagForm(request, question_id):
         if Flag_Form.is_valid():
                 new_post = Flag_Form.save(commit=False)
                 formData = Flag_Form.cleaned_data['actions_Flag_Q']
-                if formData == "SPAM" or formData == "RUDE_OR_ABUSIVE":
-                    getCreateFlag_object = FlagPost.objects.filter(question_forFlag=data).filter(
-                        Q(actions_Flag_Q="SPAM") | Q(actions_Flag_Q="RUDE_OR_ABUSIVE")).exclude(ended=True).first()
-                    if getCreateFlag_object:
-                        print("First Statement is Excecuting")
-                        new_post.flagged_by = request.user
-                        new_post.question_forFlag = data
-                        new_post.save()
-                        getCreateFlag_object.how_many_votes_on_spamANDRude += 1
-                        getCreateFlag_object.save()
-                        
-
-                    else:
-                        print("Second Statement is Excecuting")
-                        new_post.flagged_by = request.user
-                        new_post.question_forFlag = data
-                        new_post.how_many_votes_on_spamANDRude += 1
-                        new_post.save()
-                        
-
-                elif formData == "VERY_LOW_QUALITY":
-                    getCreateFlag_object = FlagPost.objects.filter(
+                getCreateFlag_object = FlagPost.objects.filter(question_forFlag=data).filter(
+                         Q(flagged_by=request.user)).exclude(ended=True).all()
+                if getCreateFlag_object:
+                    return JsonResponse({"action": "already flagged"}, status=200)
+                else:
+                    if formData == "SPAM" or formData == "RUDE_OR_ABUSIVE":
+                        getCreateFlag_object = FlagPost.objects.filter(question_forFlag=data).filter(
+                            Q(actions_Flag_Q="SPAM") | Q(actions_Flag_Q="RUDE_OR_ABUSIVE")).exclude(ended=True).first()
+                        print(getCreateFlag_object)
+                        if getCreateFlag_object:
+                                new_post.flagged_by = request.user
+                                new_post.question_forFlag = data
+                                new_post.save()
+                                getCreateFlag_object.how_many_votes_on_spamANDRude += 1
+                                getCreateFlag_object.save()
+                        else:
+                            print("Second Statement is Excecuting")
+                            new_post.flagged_by = request.user
+                            new_post.question_forFlag = data
+                            new_post.how_many_votes_on_spamANDRude += 1
+                            new_post.save()
+                    elif formData == "VERY_LOW_QUALITY":
+                        getCreateFlag_object = FlagPost.objects.filter(
                         question_forFlag=data,
                         actions_Flag_Q="VERY_LOW_QUALITY").exclude(
                         ended=True).first()
-                    if getCreateFlag_object:
-                        print("Third Statement is Excecuting")
-                        new_post.flagged_by = request.user
-                        new_post.question_forFlag = data
-                        new_post.save()
-                        getCreateFlag_object.save()
+                        if getCreateFlag_object:
+                            print("Third Statement is Excecuting")
+                            new_post.flagged_by = request.user
+                            new_post.question_forFlag = data
+                            new_post.save()
+                            getCreateFlag_object.save()
+                        else:
+                            print("Fourth Statement is Excecuting")
+                            new_post.flagged_by = request.user
+                            new_post.question_forFlag = data
+                            # new_post.how_many_votes_on_notAnAnswer += 1
+                            new_post.save()      
+                    elif formData == "IN_NEED_OF_MODERATOR_INTERVATION" or formData == "ABOUT_PROFESSIONAL":
+                        getCreateFlag_object = FlagPost.objects.filter(
+                            question_forFlag=data).filter(
+                            Q(
+                                actions_Flag_Q="IN_NEED_OF_MODERATOR_INTERVATION") | Q(
+                                actions_Flag_Q="ABOUT_PROFESSIONAL")).exclude(
+                            ended=True).first()
+                        if getCreateFlag_object:
+                            messages.error(
+                                request, 'Previous Flag is Waiting for Review')
+                        else:
+                            new_post.flagged_by = request.user
+                            new_post.question_forFlag = data
+                            new_post.save()
                     else:
-                        print("Fourth Statement is Excecuting")
-                        new_post.flagged_by = request.user
-                        new_post.question_forFlag = data
-                        # new_post.how_many_votes_on_notAnAnswer += 1
-                        new_post.save()
-                       
-                elif formData == "IN_NEED_OF_MODERATOR_INTERVATION" or formData == "ABOUT_PROFESSIONAL":
-                    getCreateFlag_object = FlagPost.objects.filter(
-                        question_forFlag=data).filter(
-                        Q(
-                            actions_Flag_Q="IN_NEED_OF_MODERATOR_INTERVATION") | Q(
-                            actions_Flag_Q="ABOUT_PROFESSIONAL")).exclude(
-                        ended=True).first()
-                    if getCreateFlag_object:
-                        messages.error(
-                            request, 'Previous Flag is Waiting for Review')
-                    else:
-                        new_post.flagged_by = request.user
-                        new_post.question_forFlag = data
-                        new_post.save()
-                else:
-                    # print("This Statement is Excecuting")
-                    getCreateFlag_object = FlagPost.objects.filter(
-                        question_forFlag=data).filter(
-                        Q(
-                            actions_Flag_Q="DUPLICATE") | Q(
-                            actions_Flag_Q="OPINION_BASED") | Q(
-                            actions_Flag_Q="NEED_MORE_FOCUS") | Q(
-                            actions_Flag_Q="NEED_ADDITIONAL_DETAILS") | Q(
-                            actions_Flag_Q="NEED_DEBUGGING") | Q(
-                                actions_Flag_Q="NOT_REPRODUCIBLE") | Q(
-                                    actions_Flag_Q="BLANTANLTY_OR_CLARITY") | Q(
-                                        actions_Flag_Q="ABOUT_GENERAL_COMPUTING_HAR")).exclude(
-                                            ended=True).first()
-                    if getCreateFlag_object:
-                        print("Last Second Statement is Excecuting")
-                        new_post.flagged_by = request.user
-                        new_post.question_forFlag = data
-                        new_post.save()
-                        getCreateFlag_object.how_many_votes_on_others += 1
-                        getCreateFlag_object.save()
-                    else:
-                        print("Last Statement is Excecuting")
-                        new_post.flagged_by = request.user
-                        new_post.question_forFlag = data
-                        new_post.how_many_votes_on_others += 1
-                        new_post.save()
-                return JsonResponse({"action": "saved"}, status=200)
+                        # print("This Statement is Excecuting")
+                        getCreateFlag_object = FlagPost.objects.filter(
+                            question_forFlag=data).filter(
+                            Q(
+                                actions_Flag_Q="DUPLICATE") | Q(
+                                actions_Flag_Q="OPINION_BASED") | Q(
+                                actions_Flag_Q="NEED_MORE_FOCUS") | Q(
+                                actions_Flag_Q="NEED_ADDITIONAL_DETAILS") | Q(
+                                actions_Flag_Q="NEED_DEBUGGING") | Q(
+                                    actions_Flag_Q="NOT_REPRODUCIBLE") | Q(
+                                        actions_Flag_Q="BLANTANLTY_OR_CLARITY") | Q(
+                                            actions_Flag_Q="ABOUT_GENERAL_COMPUTING_HAR")).exclude(
+                                                ended=True).first()
+                        if getCreateFlag_object:
+                            print("Last Second Statement is Excecuting")
+                            new_post.flagged_by = request.user
+                            new_post.question_forFlag = data
+                            new_post.save()
+                            getCreateFlag_object.how_many_votes_on_others += 1
+                            getCreateFlag_object.save()
+                        else:
+                            print("Last Statement is Excecuting")
+                            new_post.flagged_by = request.user
+                            new_post.question_forFlag = data
+                            new_post.how_many_votes_on_others += 1
+                            new_post.save()
+                 
+        return JsonResponse({"action": "saved"}, status=200)
     return JsonResponse({"error": ""}, status=400)
 @login_required
 def edit_question(request, question_id):
