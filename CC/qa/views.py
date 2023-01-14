@@ -110,28 +110,29 @@ def question_upvote_downvote(request, question_id):
         if QDownvote.objects.filter(
                 downvote_by_q=request.user,
                 downvote_question_of=post).exists():
-
-            if downVotedPost.date > upvote_time_limit:
-                QDownvote.objects.filter(
+            print(downVotedPost.date)
+            print(upvote_time_limit)
+           
+            QDownvote.objects.filter(
                     downvote_by_q=request.user,
                     downvote_question_of=post).delete()
-                m = QUpvote(upvote_by_q=request.user, upvote_question_of=post)
-                m.save()
-                return JsonResponse({'action': 'undislike_and_like'})
-            else:
-                return JsonResponse({'action': 'voteError'})
+            m = QUpvote(upvote_by_q=request.user, upvote_question_of=post)
+            m.save()
+            return JsonResponse({'action': 'undislike_and_like'})
+            
 
         elif QUpvote.objects.filter(upvote_by_q=request.user, upvote_question_of=post).exists():
-            if likepost.date > upvote_time_limit :
-                QUpvote.objects.filter(
+            print(likepost.date)
+            print(upvote_time_limit)
+           
+            QUpvote.objects.filter(
                     upvote_by_q=request.user,
                     upvote_question_of=post).delete()
-                if post.qdownvote_set.all().count() >= 5:
+            if post.qdownvote_set.all().count() >= 5:
                     post.reversal_monitor = True
                     post.save()
-                return JsonResponse({'action': 'unlike'})
-            else:
-                return JsonResponse({'action': 'voteError'})
+            return JsonResponse({'action': 'unlike'})
+            
         else:
             if request.user == post.post_owner:
                 print("Hola mamamiyaa   adios")
@@ -151,7 +152,6 @@ def question_upvote_downvote(request, question_id):
         if QUpvote.objects.filter(
                 upvote_by_q=request.user,
                 upvote_question_of=post).exists():
-            if likepost.date > upvote_time_limit :
                 m = QDownvote(
                     downvote_by_q=request.user,
                     downvote_question_of=post)
@@ -164,17 +164,15 @@ def question_upvote_downvote(request, question_id):
                     post.reversal_monitor = True
                     post.save()
                 return JsonResponse({'action': 'unlike_and_dislike'})
-            else:
-                return JsonResponse({'action': 'voteError'})
+            
         elif QDownvote.objects.filter(downvote_by_q=request.user, downvote_question_of=post).exists():
-            if downVotedPost.date > upvote_time_limit :
+          
                 QDownvote.objects.filter(
                     downvote_by_q=request.user,
                     downvote_question_of=post).delete()
                 
                 return JsonResponse({'action': 'undislike'})
-            else:
-                return JsonResponse({'action': 'voteError'})
+           
 
         else:
             if request.user == post.post_owner:
