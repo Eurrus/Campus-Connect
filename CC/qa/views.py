@@ -146,7 +146,7 @@ def question_upvote_downvote(request, question_id):
                         upvote_question_of=post)
                 created.save()
                 print("Hola mamamiyaa")
-                return JsonResponse({'action': 'like_only'})        
+                return redirect('qa:questionDetailView', pk=question_id)        
     elif request.GET.get('submit') == 'dislike':
         print("downvote")
         if QUpvote.objects.filter(
