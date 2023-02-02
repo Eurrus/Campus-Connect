@@ -43,27 +43,44 @@
         .fa-stack-overflow {
             color: blue;
         }
+        .mt-0 {
+        margin-top: -8 !important;
+        }
+        .mh {
+        margin-top: -25 !important;
+        }
     </style>
 </head>
 
-<header class="top-bar js-top-bar top-bar__network">
-    
-    <div class="wmx12 mx-auto d-flex ai-center h-25 justify-content-between" role="menubar">
-        <div class="-main flex--item">
+<header class="mt-0 top-bar js-top-bar top-bar__network">
+    <div class="mt-0 wmx12 mx-auto d-flex ai-center h-25 justify-content-between" role="menubar">
+        <div class="mt-0 -main flex--item">
            
             <a href="#" class="-logo">
                 <i><img src="{% static 'images/android-chrome-192x192-1.png' %}"></img></i>
             </a>
         </div>
         {% if user.is_authenticated %}
+        
         <ol class="-secondary d-flex ai-center list-reset h100 user-logged-out"
             role="presentation">
             <li class="-ctas">
-                <a href="{% url 'users:logout_view' %}" class="login-link btn btn-outline-danger py8" rel="nofollow">Log
+                
+            </li>
+            <li class="-ctas">
+                <a href="/" class="h5 link-seconday p-2" rel="nofollow">Home</a>
+
+            </li>
+            <li class="-ctas">
+                <a href="{% url 'Profile:usersPage' %}" class="h5 link-seconday p-5" rel="nofollow">Users</a>
+
+            </li>
+            <li class="-ctas">
+                <a href="{% url 'users:logout_view' %}" class="login-link btn btn-outline-danger btn-lg " rel="nofollow">Log
                     out</a>
 
             </li>
-           
+            
         </ol>
 
 
@@ -83,6 +100,7 @@
         {% endif %}
     </div>
 </header>
+<hr class="mh hr" />
 {% block content %}{% endblock content%}
 <footer id="footer" class="site-footer js-footer" role="contentinfo">
     <div class="site-footer--container">

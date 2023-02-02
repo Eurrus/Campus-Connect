@@ -154,8 +154,12 @@
                                     </div>
                                 </aside>
                                 {% else %}
-                                <div class="s-prose js-post-body" itemprop="text">
-                                    <div class="votecell post-layout--left">
+                                <div class="s-prose js-post-body row" itemprop="text">
+                                    <div class="col-8">
+                                        <p>{{data.body}}</p>
+                                    </div>
+                                
+                                    <div class="votecell post-layout--left col-4">
                                         <div class="js-voting-container d-flex jc-center fd-column ai-stretch gs4 fc-black-200"
                                             data-post-id="{{data.id}}">
                                             <form method="GET" class="likeForm d-inline"
@@ -164,10 +168,10 @@
                                                 <div id="id_likes{{data.id}}">
                                                     {% if request.user == likepost.upvote_by_q %}
                                                     <button name='submit' type='submit' value="like"><i
-                                                            class="fas active fa-sort-up fa-4x"></i></button>
+                                                            class="fas active fa-caret-up"></i></button>
                                                     {% else %}
                                                     <button name='submit' type='submit' value="like"><i
-                                                            class="fas inactive fa-sort-up fa-4x"></i></button>
+                                                            class="fas inactive fa-caret-up"></i></button>
                                                     {% endif %}
 
                                                     <div
@@ -180,23 +184,22 @@
                                                 </div>
                                             </form>
 
-                                            <div class="result-div"></div>
 
                                             <form action="{% url 'qa:question_upvote_downvote' data.id %}" method="GET"
                                                 class="d-inline dislikeForm" data-pk="{{ data.id }}">
                                                 <div id="id_dislikes{{data.id}}">
                                                     {% if request.user == likeDownpost.downvote_by_q %}
                                                     <button name='submit' type='submit' value="dislike"><i
-                                                            class="fas voteDownActive fa-sort-down fa-4x"></i></button>
+                                                            class="fas voteDownActive fa-caret-down"></i></button>
                                                     {% else %}
                                                     <button name='submit' type='submit' value="dislike"><i
-                                                            class="fas voteDownInActive fa-sort-down fa-4x"></i></button>
+                                                            class="fas voteDownInActive fa-caret-down"></i></button>
                                                     {% endif %}
                                                 </div>
                                             </form>
                                         </div>
                                     </div>
-                                    <p>{{data.body}}</p>
+                                    
                                 </div>
 
                                 <div class="mt24 mb12">
