@@ -11,6 +11,7 @@ from datetime import timedelta
 from review.models import FlagPost
 from review.forms import FlagQuestionForm
 from django.db.models import  Q
+from django.core.mail import send_mail,mail_admins
 # Create your views here.
 def questions(request):
  questions = Question.objects.all()
@@ -103,7 +104,7 @@ def question_upvote_downvote(request, question_id):
     downVotedPost = post.qdownvote_set.filter(
         downvote_by_q=request.user).first()
     upvote_time_limit = timezone.now() - timedelta(minutes=5)
-    
+
     # Upvote
     if request.GET.get('submit') == 'like':
         print("upvote")
@@ -191,18 +192,26 @@ def AjaxFlagForm(request, question_id):
         ended=True).first()
     if request.method == 'POST':
         Flag_Form = FlagQuestionForm(data=request.POST)
+        print("Hi")
         if Flag_Form.is_valid():
                 new_post = Flag_Form.save(commit=False)
                 formData = Flag_Form.cleaned_data['actions_Flag_Q']
                 getCreateFlag_object = FlagPost.objects.filter(question_forFlag=data).filter(
                          Q(flagged_by=request.user)).exclude(ended=True).all()
                 if getCreateFlag_object:
+                    cont=FlagPost.objects.filter(question_forFlag=data).count()   
+                    if cont>=1:
+                       mail_admins(
+                        'Hola',
+                        'please check the questions'
+                       )
+                       print("hi hello kic")
                     return JsonResponse({"action": "already flagged"}, status=200)
                 else:
                     if formData == "SPAM" or formData == "RUDE_OR_ABUSIVE":
                         getCreateFlag_object = FlagPost.objects.filter(question_forFlag=data).filter(
                             Q(actions_Flag_Q="SPAM") | Q(actions_Flag_Q="RUDE_OR_ABUSIVE")).exclude(ended=True).first()
-                        print(getCreateFlag_object)
+
                         if getCreateFlag_object:
                                 new_post.flagged_by = request.user
                                 new_post.question_forFlag = data
@@ -273,9 +282,79 @@ def AjaxFlagForm(request, question_id):
                             new_post.question_forFlag = data
                             new_post.how_many_votes_on_others += 1
                             new_post.save()
-                 
+        cont=FlagPost.objects.filter(question_forFlag=data).count()   
+        print("Yes me me me") 
+        if cont>=1:
+            print("Yes")  
         return JsonResponse({"action": "saved"}, status=200)
     return JsonResponse({"error": ""}, status=400)
+def answer_upvote_downvote(request, answer_id):
+    # que = get_object_or_404(Question, pk=question_id)
+    post = get_object_or_404(Answer, pk=answer_id)
+    question_URL = request.build_absolute_uri(
+        post.questionans.get_absolute_url())
+
+    getQuestion = Question.objects.get(answer=post)
+    if request.GET.get('submit') == 'like':
+        if request.user in post.a_vote_downs.all():
+            # REMOVE DOWOVOTE AND UPVOTE
+            post.a_vote_downs.remove(request.user)
+            print("First Statement is Excecuting")
+            post.a_vote_ups.add(request.user)
+
+            # Check if user downvoted the post if then delete that downvote
+            # reputation (-2) and add new (+10) reputation
+            return JsonResponse({'action': 'unDownVoteAndLike'})
+
+        elif request.user in post.a_vote_ups.all():
+            # REMOVE UPVOTE
+            post.a_reputation -= 10
+            print("Second Statement is Excecuting")
+            post.save()
+            post.a_vote_ups.remove(request.user)
+            
+            return JsonResponse({'action': 'unlikeAnswer'})
+        elif request.user == post.answer_owner:
+            return JsonResponse({'action': 'cannotLikeOwnPost'})
+        else:
+            # UPVOTE
+            if request.user.profile.voteUpPriv:
+                post.a_reputation += 10
+                # post.date = timezone.now()
+                post.save()
+                post.a_vote_ups.add(request.user)
+                return JsonResponse({'action': 'upv'})
+            else:
+                return JsonResponse({'action': 'lackOfPrivelege'})
+
+    elif request.GET.get('submit') == 'ansDownVote':
+        # Remove Upvote and Downvote
+        if request.user in post.a_vote_ups.all():
+            post.a_vote_ups.remove(request.user)
+            post.a_vote_downs.add(request.user)
+            return JsonResponse({'action': 'unUpvoteAndDownVote'})
+
+        elif request.user in post.a_vote_downs.all():
+            # Remove DownVote
+            post.a_vote_downs.remove(request.user)
+            
+            return JsonResponse({'action': 'undislike'})
+        elif request.user == post.answer_owner:
+            return JsonResponse({'action': 'cannotLikeOwnPost'})
+        else:
+            # Down Vote
+            if request.user.profile.voteDownPriv:
+                print("Sixth Statement is Excecuting")
+                post.a_vote_downs.add(request.user)
+                # post.date = timezone.now()
+                post.save()
+                return JsonResponse({'action': 'downVoteOnly'})
+            else:
+                return JsonResponse({'action': 'lackOfPrivelege'})
+    else:
+        messages.error(request, 'Something went wrong')
+        return redirect('Profile:home')
+
 @login_required
 def edit_question(request, question_id):
     post = Question.objects.get(id=question_id)

@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 import django_heroku
 from django.conf import settings
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = os.path.join(BASE_DIR,"templates")
@@ -80,7 +81,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'CC.wsgi.application'
 
-
+ADMINS= [ ( 'Eurrus','pavithra.vnit.2000@gmail.com')
+]
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
@@ -161,3 +163,12 @@ MARTOR_TOOLBAR_BUTTONS = [
     'link', 'image-link', 'image-upload', 'emoji',
     'direct-mention', 'toggle-maximize', 'help'
 ]
+ 
+ #Email settings
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_PORT=587
+EMAIL_HOST_USER='pavi.velpucherla@gmail.com'
+EMAIL_HOST_PASSWORD='vjej ruqr cgge vhmc'
+EMAIL_USE_TLS=True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_USE_SSL=True

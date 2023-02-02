@@ -275,9 +275,49 @@
                             <div id="answer-{{answer.id}}"
                                 class="answer js-answer {% if answer.is_deleted %}deleted-answer{% endif %}"
                                 data-answerid="{{answer.id}}">
+                                <form method="GET" class="ansLikeForm"
+                                    action="{% url 'qa:answer_upvote_downvote' answer.id %}" data-pk="{{ answer.id }}">
+                                    <div id="id_Ans_UpVote{{answer.id}}">
+                                        {% if user in answer.a_vote_ups.all %}
+                                        <button name='submit' type='submit' value="voteAns"><i
+                                                class="fas active fa-sort-up fa-4x"></i></button>
+                                        {% else %}
+                                        <button name='submit' type='submit' value="voteAns"><i
+                                                class="fas inactive fa-sort-up fa-4x"></i></button>
+                                        {% endif %}
+                                        {% if request.user.profile.established_user_Priv == False %}
+                                        <div class="flex--item d-flex fd-column ai-center color-black fs-title">
+                                            <div class="showVoteCount-answer">{{answer.countAllTheVotes}}
+                                            </div>
+                                        </div>
+                                        {% elif request.user.profile.established_user_Priv %}
+                                        <div class="flex--item d-flex fd-column ai-center color-black fs-title">
+                                            <div class="showanswer-VotesDiv"
+                                                data-load-url="{% url 'qa:load_answer_upvotes_downvotes' answer.id %}">
+                                                <div class="showVoteCount-answer hideThis-answer-Div">
+                                                    {{answer.countAllTheVotes}}</div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </form>
 
+                                <div class="result-answer-div"></div>
 
+                                <form action="{% url 'qa:answer_upvote_downvote' answer.id  %}" method="GET"
+                                    class="ansDislikeForm" data-pk="{{ answer.id }}">
+                                    <div id="id_Ans_DownVote{{answer.id}}">
+                                        {% if user in answer.a_vote_downs.all %}
+                                        <button name='submit' type='submit' value="downVoteAns"><i
+                                                class="fas voteDownActive fa-sort-down fa-4x"></i></button>
+                                        {% else %}
+                                        <button name='submit' type='submit' value="downVoteAns"><i
+                                                class="fas voteDownInActive fa-sort-down fa-4x"></i></button>
+                                        {% endif %}
+                                    </div>
+                                </form>
 
+                                <!-- UPVOTE END -->
                                 <div class="post-layout">
                                     <div class="answercell post-layout--right">
                                         {% if answer.is_deleted %}
