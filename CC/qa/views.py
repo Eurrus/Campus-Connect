@@ -543,3 +543,11 @@ def reviewQuestion(request):
         elif data['showError']:
             data['error_message_of_tag'] = f'Add atleast One Tag'
         return JsonResponse(data)
+def searchQuestion(request):
+    context={}
+    if request.method=="POST":
+      searchQ=request.POST.get("searchQ")
+      print(searchQ)
+      questions=Question.objects.filter(title__icontains=searchQ).all()
+      return render(request,'qa/searchQuestions_list.html',{'questions':questions})
+    return render(request,'qa/searchQuestions_list.html',context)

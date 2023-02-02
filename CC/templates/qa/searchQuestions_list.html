@@ -1,0 +1,154 @@
+{% extends 'Profile/base.html' %}
+{% block content %}
+
+
+<!DOCTYPE html>
+
+
+<html class="html__responsive ">
+
+<head>
+    <title>search - Campus Connect</title>
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.sstatic.net/Sites/stackoverflow/primary.css?v=34c234f84be8">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.sstatic.net/Sites/stackoverflow/secondary.css?v=bbf1061b903d">
+</head>
+
+
+<body class="users-page unified-theme">
+    <div id="notify-container"></div>
+    <div id="custom-header"></div>
+
+    <div class="container">
+        <div id="left-sidebar" data-is-here-when="md lg" class="left-sidebar js-pinned-left-sidebar ps-relative">
+            <div class="left-sidebar--sticky-container js-sticky-leftnav">
+                <nav role="navigation">
+                    <ol class="nav-links">
+                        <li>
+                            <a href="/" class="pl8 nav-links--link">
+                                <div class="d-flex ai-center">
+                                    <div class="flex--item truncate">
+                                        Home
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <ol class="nav-links">
+                                <li class="fs-fine tt-uppercase ml8 mt16 mb4 fc-light">Public</li>
+
+                                <li>
+                                    <a id="nav-questions" href="{% url 'qa:questions' %}"
+                                        class="pl8 nav-links--link -link__with-icon">
+                                        <i class="fa fa-lg fa-question fa-solid mx-2"> </i>
+                                        <span class="-link--channel-name">Questions</span>
+                                    </a>
+                                </li>
+
+
+                                <li class="">
+                                    <a id="nav-tags" class="nav-links--link" href="{% url 'Profile:usersPage' %}">
+                                        <div class="d-flex ai-center">
+
+                                            <div class="flex--item truncate"><i class="fa fa-lg fa-tag fa-solid mx-2">
+                                                </i>Tags</div>
+                                        </div>
+                                    </a>
+                                </li>
+
+
+                                <li class="youarehere">
+                                    <a id="nav-questions" href="{% url 'Profile:usersPage' %}"
+                                        class="pl8 nav-links--link -link__with-icon">
+                                        <i class="fa fa-lg fa-user fa-solid mx-2"> </i>
+                                        <span class="-link--channel-name">Users</span>
+                                    </a>
+                                </li>
+
+
+
+                            </ol>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+        </div>
+
+
+
+        <div id="content" class="snippet-hidden">
+
+            <div id="mainbar-full">
+
+                <h1 class="fs-headline1 mb24">
+                    Search
+                </h1>
+
+                <div class="d-flex fw-wrap ai-stretch md:d-block">
+                    <div class="flex--item mb12 ps-relative">
+                        <form method="post" class="d-flex" action="{% url 'qa:searchQuestion' %}">
+                            {% csrf_token %}
+                            <input name="searchQ" id="id_search_user" class="s-input s-input__search h100 wmx3"
+                                autocomplete="off" type="text" placeholder="search">
+                            <svg aria-hidden="true" class="s-input-icon s-input-icon__search svg-icon iconSearch"
+                                width="18" height="18" viewBox="0 0 18 18">
+                                <path
+                                    d="m18 16.5-5.14-5.18h-.35a7 7 0 10-1.19 1.19v.35L16.5 18l1.5-1.5ZM12 7A5 5 0 112 7a5 5 0 0110 0Z" />
+                            </svg>
+                        </form>
+                    </div>
+
+                </div>
+                <div class="d-flex flex-row">
+                    {% for question in questions %}
+                    {% if question.is_deleted %}
+
+                    {% if question.post_owner == user %}
+                    <div class="col-lg-6 mx-2 card bg-light mb-3" style="max-width: 18rem;">
+                        <div class="card-header"><a href="{{question.get_absolute_url}}" class="link-primary">
+                                {{question.title|truncatechars:50}}</a></div>
+                        <div class="card-body">
+                            <p class="card-text">{{question.body|truncatechars:200}}</p>
+                        </div>
+                        <div class="card-footer bg-light"><a href="{{question.post_owner.profile.get_absolute_url}}"
+                                class="link-primary">{{question.post_owner}}</a></div>
+                    </div>
+                    {% endif %}
+                    {% else %}
+
+                    <div class="col-lg-6 mx-2 card bg-light mb-3" style="max-width: 18rem;">
+                        <div class="card-header"><a href="{{question.get_absolute_url}}" class="link-primary">
+                                {{question.title|truncatechars:50}}</a></div>
+                        <div class="card-body">
+                            <p class="card-text">{{question.body|truncatechars:200}}</p>
+                        </div>
+                        <div class="card-footer bg-light"><a href="{{question.post_owner.profile.get_absolute_url}}"
+                                class="link-primary">{{question.post_owner}}</a></div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>
+
+
+
+{% endblock content %}

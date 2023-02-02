@@ -114,13 +114,15 @@
                     <h1 class="flex--item fl1 fs-headline1 mb24">All Questions</h1>
                     <div class="d-flex fw-wrap ai-stretch md:d-block">
                         <div class="flex--item mb12 ps-relative">
-                            <form method="post" action="#">
-                                <input name="w" id="id_search_question" class="s-input s-input__search h100 wmx3"
-                                    autocomplete="off" type="text" placeholder="search question">
-                                <svg aria-hidden="true" class="s-input-icon s-input-icon__search svg-icon iconSearch">
+                            <form method="post" class="d-flex" action="{% url 'qa:searchQuestion' %}">
+                                {% csrf_token %}
+                                <input id="id_search_question" class="form-control me-2" autocomplete="off"
+                                    name="searchQ" type="text" placeholder="search question">
+                                <!-- <svg aria-hidden="true" class="s-input-icon s-input-icon__search svg-icon iconSearch">
                                     <path
                                         d="m18 16.5-5.14-5.18h-.35a7 7 0 10-1.19 1.19v.35L16.5 18l1.5-1.5ZM12 7A5 5 0 112 7a5 5 0 0110 0Z" />
-                                </svg>
+                                </svg> -->
+                                <button class="btn btn-outline-secondary" type="submit">Search</button>
                             </form>
                         </div>
 
