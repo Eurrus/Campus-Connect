@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django_extensions',
+    'import_export',
     'taggit',
     'Profile',
     'users',

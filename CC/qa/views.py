@@ -119,7 +119,7 @@ def question_upvote_downvote(request, question_id):
                     downvote_question_of=post).delete()
             m = QUpvote(upvote_by_q=request.user, upvote_question_of=post)
             m.save()
-            return JsonResponse({'action': 'undislike_and_like'})
+            return redirect('qa:questionDetailView', pk=question_id)
             
 
         elif QUpvote.objects.filter(upvote_by_q=request.user, upvote_question_of=post).exists():
@@ -132,12 +132,12 @@ def question_upvote_downvote(request, question_id):
             if post.qdownvote_set.all().count() >= 5:
                     post.reversal_monitor = True
                     post.save()
-            return JsonResponse({'action': 'unlike'})
+            return redirect('qa:questionDetailView', pk=question_id)
             
         else:
             if request.user == post.post_owner:
-                print("Hola mamamiyaa   adios")
-                return JsonResponse({'action': 'cannotLikeOwnPost'})
+                
+                return redirect('qa:questionDetailView', pk=question_id)
             else:
                 print("else")
                 # post.q_reputation += 10
@@ -146,7 +146,7 @@ def question_upvote_downvote(request, question_id):
                         upvote_by_q=request.user,
                         upvote_question_of=post)
                 created.save()
-                print("Hola mamamiyaa")
+                
                 return redirect('qa:questionDetailView', pk=question_id)        
     elif request.GET.get('submit') == 'dislike':
         print("downvote")
@@ -164,7 +164,7 @@ def question_upvote_downvote(request, question_id):
                 if post.qdownvote_set.all().count() >= 5:
                     post.reversal_monitor = True
                     post.save()
-                return JsonResponse({'action': 'unlike_and_dislike'})
+                return redirect('qa:questionDetailView', pk=question_id)
             
         elif QDownvote.objects.filter(downvote_by_q=request.user, downvote_question_of=post).exists():
           
@@ -172,19 +172,19 @@ def question_upvote_downvote(request, question_id):
                     downvote_by_q=request.user,
                     downvote_question_of=post).delete()
                 
-                return JsonResponse({'action': 'undislike'})
+                return redirect('qa:questionDetailView', pk=question_id)
            
 
         else:
             if request.user == post.post_owner:
                 
-                return JsonResponse({'action': 'cannotLikeOwnPost'})
+                return redirect('qa:questionDetailView', pk=question_id)
             else:
                     created = QDownvote(
                         downvote_by_q=request.user,
                         downvote_question_of=post)
                     created.save()
-                    return JsonResponse({'action': 'dislike_only'})
+                    return redirect('qa:questionDetailView', pk=question_id)
 def AjaxFlagForm(request, question_id):
     data = get_object_or_404(Question, pk=question_id)
     getCreateFlag_object = FlagPost.objects.filter(

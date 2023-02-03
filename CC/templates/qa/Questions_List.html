@@ -116,7 +116,7 @@
                         <div class="flex--item mb12 ps-relative">
                             <form method="post" class="d-flex" action="{% url 'qa:searchQuestion' %}">
                                 {% csrf_token %}
-                                <input id="id_search_question" class="form-control me-2" autocomplete="off"
+                                <input name="w" id="id_search_question" class="form-control me-2" autocomplete="off"
                                     name="searchQ" type="text" placeholder="search question">
                                 <!-- <svg aria-hidden="true" class="s-input-icon s-input-icon__search svg-icon iconSearch">
                                     <path
