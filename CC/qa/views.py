@@ -24,7 +24,12 @@ def questions(request):
  return render(request, 'qa/Questions_List.html',context)
 def questionDetailView(request, pk,):  # slug):
     data = get_object_or_404(Question, pk=pk)
-    answers_of_questions = data.answer_set.all()
+    #answers_of_questions = data.answer_set.all()
+    sorted(data.answer_set.all(),key=lambda m: m.countAllTheVotes)
+    ratings_tuples = [(r.id, r.countAllTheVotes) for r in data.answer_set.all()]  
+    ratings_list = sorted(ratings_tuples, key = lambda x: x[1]) 
+    answers_of_questions = ratings_list
+    print(answers_of_questions)
     STORING_THE_ORIGINAL = []
     for anss in answers_of_questions:
         STORING_THE_ORIGINAL.append(anss)
@@ -293,7 +298,7 @@ def answer_upvote_downvote(request, answer_id):
     post = get_object_or_404(Answer, pk=answer_id)
     question_URL = request.build_absolute_uri(
         post.questionans.get_absolute_url())
-
+    question_id=post.questionans.id
     getQuestion = Question.objects.get(answer=post)
     if request.GET.get('submit') == 'like':
         if request.user in post.a_vote_downs.all():
@@ -301,10 +306,10 @@ def answer_upvote_downvote(request, answer_id):
             post.a_vote_downs.remove(request.user)
             print("First Statement is Excecuting")
             post.a_vote_ups.add(request.user)
-
+            return redirect('qa:questionDetailView', pk=question_id)
             # Check if user downvoted the post if then delete that downvote
             # reputation (-2) and add new (+10) reputation
-            return JsonResponse({'action': 'unDownVoteAndLike'})
+            
 
         elif request.user in post.a_vote_ups.all():
             # REMOVE UPVOTE
@@ -312,31 +317,31 @@ def answer_upvote_downvote(request, answer_id):
             post.save()
             post.a_vote_ups.remove(request.user)
             
-            return JsonResponse({'action': 'unlikeAnswer'})
+            return redirect('qa:questionDetailView', pk=question_id)
         else:
             # UPVOTE
                 # post.date = timezone.now()
                 post.save()
                 post.a_vote_ups.add(request.user)
-                return JsonResponse({'action': 'upv'})
+                return redirect('qa:questionDetailView', pk=question_id)
     elif request.GET.get('submit') == 'dislike':
         # Remove Upvote and Downvote
         if request.user in post.a_vote_ups.all():
             post.a_vote_ups.remove(request.user)
             post.a_vote_downs.add(request.user)
-            return JsonResponse({'action': 'unUpvoteAndDownVote'})
+            return redirect('qa:questionDetailView', pk=question_id)
 
         elif request.user in post.a_vote_downs.all():
             # Remove DownVote
             post.a_vote_downs.remove(request.user)
             
-            return JsonResponse({'action': 'undislike'})
+            return redirect('qa:questionDetailView', pk=question_id)
         else:
                 print("Sixth Statement is Excecuting")
                 post.a_vote_downs.add(request.user)
                 # post.date = timezone.now()
                 post.save()
-                return JsonResponse({'action': 'downVoteOnly'})
+                return redirect('qa:questionDetailView', pk=question_id)
             
     else:
         messages.error(request, 'Something went wrong')
