@@ -275,51 +275,47 @@
 
                             {% else %}
                             {% for answer in answers %}
-
-
-
-                            <a name="{{answer.id}}"></a>
+                            <div name="{{answer.id}}" class="col-8"></div>
                             <div id="answer-{{answer.id}}"
-                                class="answer js-answer {% if answer.is_deleted %}deleted-answer{% endif %}"
+                                class=" answer js-answer {% if answer.is_deleted %}deleted-answer{% endif %} col-4 "
                                 data-answerid="{{answer.id}}">
-                                <form method="GET" class="ansLikeForm"
+                                <div>
+                                    
+                                </div>
+                                <form method="GET" class="ansLikeForm d-inline"
                                     action="{% url 'qa:answer_upvote_downvote' answer.id %}" data-pk="{{ answer.id }}">
                                     <div id="id_Ans_UpVote{{answer.id}}">
-
                                         <button name='submit' type='submit' value="like"><i
-                                                class="fas active fa-sort-up fa-4x"></i></button>
-
-
-
-
-                                        <div class="flex--item d-flex fd-column ai-center color-black fs-title">
+                                                class="fas active fa-caret-up"></i></button>
+                                        <div
+                                            class="flex--item d-flex justify-content-start fd-column color-black fs-title">
                                             <div class="showanswer-VotesDiv">
                                                 <div class="showVoteCount-answer hideThis-answer-Div">
                                                     {{answer.countAllTheVotes}}</div>
                                             </div>
                                         </div>
 
+
                                     </div>
                                 </form>
 
-                                <div class="result-answer-div"></div>
 
                                 <form action="{% url 'qa:answer_upvote_downvote' answer.id  %}" method="GET"
-                                    class="ansDislikeForm" data-pk="{{ answer.id }}">
+                                    class="ansDislikeForm d-inline" data-pk="{{ answer.id }}">
                                     <div id="id_Ans_DownVote{{answer.id}}">
                                         {% if user in answer.a_vote_downs.all %}
                                         <button name='submit' type='submit' value="dislike"><i
-                                                class="fas voteDownActive fa-sort-down fa-4x"></i></button>
+                                                class="fas voteDownActive fa-caret-down"></i></button>
                                         {% else %}
                                         <button name='submit' type='submit' value="dislike"><i
-                                                class="fas voteDownInActive fa-sort-down fa-4x"></i></button>
+                                                class="fas voteDownInActive fa-caret-down"></i></button>
                                         {% endif %}
                                     </div>
                                 </form>
 
                                 <!-- UPVOTE END -->
                                 <div class="post-layout">
-                                    <div class="answercell post-layout--right">
+                                    <div class="answercell post-layout--right col-8">
                                         {% if answer.is_deleted %}
                                         <aside class="s-notice s-notice__info post-notice js-post-notice mb16"
                                             role="status">
@@ -397,21 +393,23 @@
                                     </div>
                                     {% endfor %}
                                 </div>
-                                <h2 class="space">Your Answer</h2>
+                                <div>
+                                    <h2 class="space">Your Answer</h2>
 
-                                <div id="post-editor" class="post-editor js-post-editor">
-                                    <form class="form" method="post" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                        <div class="form-group">
-                                            {{ form.body }}
-                                        </div>
-                                        <div class="cbt d-flex gsx gs4">
-                                            <button class="flex--item s-btn s-btn__primary" type="submit">Post Your
-                                                Answer</button>
-                                        </div>
-                                    </form>
+                                    <div id="post-editor" class="post-editor js-post-editor">
+
+                                        <form class="form" method="post" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="form-group">
+                                                {{ form.body }}
+                                            </div>
+                                            <div class="cbt d-flex gsx gs4">
+                                                <button class="flex--item s-btn s-btn__primary" type="submit">Post Your
+                                                    Answer</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
-
                                 {% endif %}
                             </div>
                         </div>
