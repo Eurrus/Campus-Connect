@@ -631,17 +631,14 @@ def searchQuestion(request):
       query_counts = pd.DataFrame(query_term_matrix.toarray(), columns=cv.get_feature_names_out())
       splits=searchQ.split(" ")
       results = cosine_similarity(tf_idfs, query_term_matrix)
-      print(results)
       results = results.reshape((-1,))
-      print("Search results for: '{}'".format(searchQ))
-      idx=[]
-
+      idx2=[]
       for i in results.argsort()[:-11:-1]:
         if results[i] > 0:
-        #   print("Body {}. {} {} {} {}%".format(i, df.iloc[i,0],df.iloc[i,1] ,df.iloc[i,2],round(100*results[i])))
-        #   idx.append((df.iloc[i,0],round(100*results[i])))
-          idx.append(df.iloc[i,0])
-      questions=Question.objects.filter(pk__in=idx).all()
-
-      return render(request,'qa/searchQuestions_list.html',{'questions':questions})
+          idx2.append((df.iloc[i,0],round(100*results[i])))
+      pk_list = [idx for idx,rating in idx2]
+      preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(pk_list)])  
+      queryset = Question.objects.filter(pk__in=pk_list).order_by(preserved)
+      print(queryset)
+      return render(request,'qa/searchQuestions_list.html',{'questions':queryset})
     return render(request,'qa/searchQuestions_list.html',context)
