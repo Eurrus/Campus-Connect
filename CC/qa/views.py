@@ -13,6 +13,16 @@ from review.forms import FlagQuestionForm
 from django.db.models import  Q
 from django.core.mail import send_mail,mail_admins
 # Create your views here.
+
+#cosine similarity
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+df=pd.read_excel('C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/qa/cosine_similarity_data.xlsx')
+
+
 def questions(request):
  questions = Question.objects.all()
  questions_count=Question.objects.count()
@@ -530,12 +540,103 @@ def reviewQuestion(request):
         elif data['showError']:
             data['error_message_of_tag'] = f'Add atleast One Tag'
         return JsonResponse(data)
+
+
+# def calcTFIDF():
+#     print("hello")
+#     df=pd.read_csv('C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/qa/Question-2023-02-05.csv')
+#     # print(df)
+#     # Use a CountVectorizer to learn the terms and term frequencies across all of the documents (carols) 
+#     cv = CountVectorizer(stop_words='english')
+#     doc_term_matrix = cv.fit_transform(df['title'])
+#     word_counts = pd.DataFrame(doc_term_matrix.toarray(), index=df["body"], columns=cv.get_feature_names_out())
+#     word_counts.sum().sort_values(ascending=False)
+#     idfs = TfidfTransformer() 
+#     idfs.fit(doc_term_matrix)
+#     idfs_df = pd.DataFrame(idfs.idf_, index=cv.get_feature_names_out(), columns=["idfs"]) 
+ 
+#     # Sort ascending and display
+#     # High IDF (1/DF) terms are less frequent across all documents; low IDF terms are more frequent 
+#     idfs_df.sort_values(by=['idfs'], ascending=False)
+#     # We have the term frequencies and inverse document frequencies - now calculate the TF-IDF scores
+#     tf_idfs = idfs.transform(doc_term_matrix)
+#     doc = 0
+#     col = "tf-idf for doc {}".format(doc)
+#     tf_idf_doc = pd.DataFrame(tf_idfs[doc].T.todense(), index=cv.get_feature_names_out(), columns=[col])
+#     tf_idf_doc.sort_values(by=[col], ascending=False)
+    
+#     tf_idf_all_docs = pd.DataFrame(tf_idfs.T.todense(), index=cv.get_feature_names_out())
+#     tf_idf_all_docs_nicer = pd.DataFrame(np.transpose(tf_idfs.T.toarray()), index=df["body"], columns=cv.get_feature_names_out())
+#     print(tf_idf_doc)
+#     return tf_idfs, cv
+
+# def searchQuery(query):
+#     tf_idfs,cv=calcTFIDF()
+#     idx=[]
+#     query_term_matrix = cv.transform([query])
+#     print(query_term_matrix)
+#     results = cosine_similarity(tf_idfs, query_term_matrix)
+#     results = results.reshape((-1,))
+#     print("Search results for: '{}'".format(query))
+#     for i in results.argsort()[:-11:-1]:
+#         if results[i] > 0:
+#             print("Body {} {}. {} {}%".format(i, df.iloc[i,0],df.iloc[i,2], round(100*results[i])))
+#             idx.append(df.iloc[i,0])
+#             # print(df.iloc[i,0],df.iloc[i,2])
+#     return idx
+
 def searchQuestion(request):
     context={}
     if request.method=="POST":
       print("Hola")
       searchQ=request.POST.get("searchQ")
-      print(searchQ)
-      questions=Question.objects.filter(title__icontains=searchQ).all()
+    #   idx=searchQuery(searchQ)
+      df=pd.read_csv('C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/qa/Question-2023-02-05.csv')
+      cv = CountVectorizer(stop_words='english')
+      doc_term_matrix = cv.fit_transform(df['title'])
+      doc_term_matrix.shape
+      cv.get_feature_names_out()
+      word_counts = pd.DataFrame(doc_term_matrix.toarray(), index=df["body"], columns=cv.get_feature_names_out())
+      word_counts.sum().sort_values(ascending=False)
+      print("word counts for job")
+      print(word_counts[["career", "job"]])
+      idfs = TfidfTransformer() 
+      idfs.fit(doc_term_matrix)
+      idfs_df = pd.DataFrame(idfs.idf_, index=cv.get_feature_names_out(), columns=["idfs"]) 
+ 
+      # Sort ascending and display
+      # High IDF (1/DF) terms are less frequent across all documents; low IDF terms are more frequent 
+      idfs_df.sort_values(by=['idfs'], ascending=False)
+      # We have the term frequencies and inverse document frequencies - now calculate the TF-IDF scores
+      tf_idfs = idfs.transform(doc_term_matrix)
+      doc = 0
+      col = "tf-idf for doc {}".format(doc)
+      tf_idf_doc = pd.DataFrame(tf_idfs[doc].T.todense(), index=cv.get_feature_names_out(), columns=[col])
+      tf_idf_doc.sort_values(by=[col], ascending=False)
+       # Create a data frame to view all of the TF-IDF scores
+      tf_idf_all_docs = pd.DataFrame(tf_idfs.T.todense(), index=cv.get_feature_names_out())
+      tf_idf_all_docs
+      tf_idf_all_docs_nicer = pd.DataFrame(np.transpose(tf_idfs.T.toarray()), index=df["body"], columns=cv.get_feature_names_out())
+      tf_idf_all_docs_nicer
+
+      
+      # Calculate term frequencies for the query using terms found across all of the documents
+      query_term_matrix = cv.transform([searchQ])
+      print(query_term_matrix)
+      query_counts = pd.DataFrame(query_term_matrix.toarray(), columns=cv.get_feature_names_out())
+      splits=searchQ.split(" ")
+      results = cosine_similarity(tf_idfs, query_term_matrix)
+      print(results)
+      results = results.reshape((-1,))
+      print("Search results for: '{}'".format(searchQ))
+      idx=[]
+
+      for i in results.argsort()[:-11:-1]:
+        if results[i] > 0:
+        #   print("Body {}. {} {} {} {}%".format(i, df.iloc[i,0],df.iloc[i,1] ,df.iloc[i,2],round(100*results[i])))
+        #   idx.append((df.iloc[i,0],round(100*results[i])))
+          idx.append(df.iloc[i,0])
+      questions=Question.objects.filter(pk__in=idx).all()
+
       return render(request,'qa/searchQuestions_list.html',{'questions':questions})
     return render(request,'qa/searchQuestions_list.html',context)
