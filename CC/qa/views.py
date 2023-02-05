@@ -12,6 +12,7 @@ from review.models import FlagPost
 from review.forms import FlagQuestionForm
 from django.db.models import  Q
 from django.core.mail import send_mail,mail_admins
+from django.db.models import Case, When
 # Create your views here.
 def questions(request):
  questions = Question.objects.all()
@@ -24,12 +25,11 @@ def questions(request):
  return render(request, 'qa/Questions_List.html',context)
 def questionDetailView(request, pk,):  # slug):
     data = get_object_or_404(Question, pk=pk)
-    #answers_of_questions = data.answer_set.all()
-    sorted(data.answer_set.all(),key=lambda m: m.countAllTheVotes)
-    ratings_tuples = [(r.id, r.countAllTheVotes) for r in data.answer_set.all()]  
-    ratings_list = sorted(ratings_tuples, key = lambda x: x[1]) 
-    answers_of_questions = ratings_list
-    print(answers_of_questions)
+
+    
+    answers_of_questions = sorted(data.answer_set.all(), key = lambda x: x.countAllTheVotes,reverse=True) 
+     
+    #Answer.objects.filter(pk__in=ratings_list)
     STORING_THE_ORIGINAL = []
     for anss in answers_of_questions:
         STORING_THE_ORIGINAL.append(anss)
