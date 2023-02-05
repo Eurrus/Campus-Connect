@@ -308,26 +308,18 @@ def answer_upvote_downvote(request, answer_id):
 
         elif request.user in post.a_vote_ups.all():
             # REMOVE UPVOTE
-            post.a_reputation -= 10
             print("Second Statement is Excecuting")
             post.save()
             post.a_vote_ups.remove(request.user)
             
             return JsonResponse({'action': 'unlikeAnswer'})
-        elif request.user == post.answer_owner:
-            return JsonResponse({'action': 'cannotLikeOwnPost'})
         else:
             # UPVOTE
-            if request.user.profile.voteUpPriv:
-                post.a_reputation += 10
                 # post.date = timezone.now()
                 post.save()
                 post.a_vote_ups.add(request.user)
                 return JsonResponse({'action': 'upv'})
-            else:
-                return JsonResponse({'action': 'lackOfPrivelege'})
-
-    elif request.GET.get('submit') == 'ansDownVote':
+    elif request.GET.get('submit') == 'dislike':
         # Remove Upvote and Downvote
         if request.user in post.a_vote_ups.all():
             post.a_vote_ups.remove(request.user)
@@ -339,18 +331,13 @@ def answer_upvote_downvote(request, answer_id):
             post.a_vote_downs.remove(request.user)
             
             return JsonResponse({'action': 'undislike'})
-        elif request.user == post.answer_owner:
-            return JsonResponse({'action': 'cannotLikeOwnPost'})
         else:
-            # Down Vote
-            if request.user.profile.voteDownPriv:
                 print("Sixth Statement is Excecuting")
                 post.a_vote_downs.add(request.user)
                 # post.date = timezone.now()
                 post.save()
                 return JsonResponse({'action': 'downVoteOnly'})
-            else:
-                return JsonResponse({'action': 'lackOfPrivelege'})
+            
     else:
         messages.error(request, 'Something went wrong')
         return redirect('Profile:home')
@@ -546,6 +533,7 @@ def reviewQuestion(request):
 def searchQuestion(request):
     context={}
     if request.method=="POST":
+      print("Hola")
       searchQ=request.POST.get("searchQ")
       print(searchQ)
       questions=Question.objects.filter(title__icontains=searchQ).all()

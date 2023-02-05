@@ -43,6 +43,9 @@ class Answer(models.Model):
     a_vote_downs = models.ManyToManyField(User, related_name='a_vote_down', blank=True)
     accepted = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
+    @property
+    def countAllTheVotes(self):
+        return self.a_vote_ups.all().count() - self.a_vote_downs.all().count()
 class QDownvote(models.Model):
     downvote_by_q = models.ForeignKey(User, on_delete=models.CASCADE)
     downvote_question_of = models.ForeignKey(Question, on_delete=models.CASCADE)
