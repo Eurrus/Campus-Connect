@@ -143,7 +143,6 @@ def question_upvote_downvote(request, question_id):
                 downvote_question_of=post).exists():
             print(downVotedPost.date)
             print(upvote_time_limit)
-           
             QDownvote.objects.filter(
                     downvote_by_q=request.user,
                     downvote_question_of=post).delete()
@@ -155,28 +154,19 @@ def question_upvote_downvote(request, question_id):
         elif QUpvote.objects.filter(upvote_by_q=request.user, upvote_question_of=post).exists():
             print(likepost.date)
             print(upvote_time_limit)
-           
-            QUpvote.objects.filter(
-                    upvote_by_q=request.user,
-                    upvote_question_of=post).delete()
-            if post.qdownvote_set.all().count() >= 5:
-                    post.reversal_monitor = True
-                    post.save()
+            # QUpvote.objects.filter(
+            #         upvote_by_q=request.user,
+            #         upvote_question_of=post).delete()
+            # if post.qdownvote_set.all().count() >= 5:
+            #         post.reversal_monitor = True
+            #         post.save()
             return redirect('qa:questionDetailView', pk=question_id)
             
         else:
-            if request.user == post.post_owner:
-                
-                return redirect('qa:questionDetailView', pk=question_id)
-            else:
-                print("else")
-                # post.q_reputation += 10
-                # post.save()
                 created = QUpvote(
                         upvote_by_q=request.user,
                         upvote_question_of=post)
                 created.save()
-                
                 return redirect('qa:questionDetailView', pk=question_id)        
     elif request.GET.get('submit') == 'dislike':
         print("downvote")
@@ -187,34 +177,25 @@ def question_upvote_downvote(request, question_id):
                     downvote_by_q=request.user,
                     downvote_question_of=post)
                 m.save()
-                print("m.save()")
                 QUpvote.objects.filter(
                     upvote_by_q=request.user,
                     upvote_question_of=post).delete()
-                if post.qdownvote_set.all().count() >= 5:
-                    post.reversal_monitor = True
-                    post.save()
                 return redirect('qa:questionDetailView', pk=question_id)
             
         elif QDownvote.objects.filter(downvote_by_q=request.user, downvote_question_of=post).exists():
           
-                QDownvote.objects.filter(
-                    downvote_by_q=request.user,
-                    downvote_question_of=post).delete()
+                
                 
                 return redirect('qa:questionDetailView', pk=question_id)
            
 
         else:
-            if request.user == post.post_owner:
-                
-                return redirect('qa:questionDetailView', pk=question_id)
-            else:
-                    created = QDownvote(
+        
+                created = QDownvote(
                         downvote_by_q=request.user,
                         downvote_question_of=post)
-                    created.save()
-                    return redirect('qa:questionDetailView', pk=question_id)
+                created.save()
+                return redirect('qa:questionDetailView', pk=question_id)
 def AjaxFlagForm(request, question_id):
     data = get_object_or_404(Question, pk=question_id)
     getCreateFlag_object = FlagPost.objects.filter(
@@ -383,6 +364,7 @@ def edit_question(request, question_id):
             instance=post, data=request.POST, files=request.FILES)
         if form.is_valid():
             form.save(commit=False)
+            formTags = form.cleaned_data['tags']
             post.q_edited_time = timezone.now()
             post.active_date = timezone.now()
             post.q_edited_by = request.user

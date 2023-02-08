@@ -16,4 +16,4 @@ class EditAnswerForm(forms.ModelForm):
 class UpdateQuestion(forms.ModelForm):
 	class Meta:
 		model = Question
-		fields = ['title','body']
+		fields = ['title','body','tags']
