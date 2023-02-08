@@ -13,6 +13,10 @@ from review.forms import FlagQuestionForm
 from django.db.models import  Q
 from django.core.mail import send_mail,mail_admins
 from django.db.models import Case, When
+from openpyxl import load_workbook
+import sqlite3
+from sqlalchemy import create_engine
+from sqlalchemy.exc import SQLAlchemyError
 # Create your views here.
 
 #cosine similarity
@@ -595,8 +599,18 @@ def searchQuestion(request):
     if request.method=="POST":
       print("Hola")
       searchQ=request.POST.get("searchQ")
-    #   idx=searchQuery(searchQ)
-      df=pd.read_csv('C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/qa/Question-2023-02-05.csv')
+      my_conn = sqlite3.connect("C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/db.sqlite3")
+      try:
+       query="SELECT * FROM qa_Question" # query to collect record 
+       df = pd.read_sql(query,my_conn,index_col='id') # create DataFrame
+       print(df.head()) # Print top 5 rows as sample
+       df.to_excel('C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/qa/Question-2023-02-05.xlsx')  # create the excel file 
+      except SQLAlchemyError as e:
+        error = str(e.__dict__['orig'])
+        print(error)
+      else:
+        print("DataFrame created successfully..")
+      df=pd.read_excel('C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/qa/Question-2023-02-05.xlsx')
       cv = CountVectorizer(stop_words='english')
       doc_term_matrix = cv.fit_transform(df['title'])
       doc_term_matrix.shape

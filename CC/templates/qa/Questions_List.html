@@ -135,7 +135,7 @@
                     </div>
                 </div>
                 <br>
-                <div class="d-flex">
+                <div class="d-flex flex-column">
                     {% for question in questions %}
                     {% if question.is_deleted %}
                     {% if question.post_owner == user %}
@@ -152,6 +152,7 @@
                                 class="link-primary">{{question.post_owner}}</a>
                         </div>
                     </div>
+                    <br>
                     {% endif %}
                     {% else %}
                     <div class="card bg-light">
@@ -167,7 +168,7 @@
                                 class="link-primary">{{question.post_owner}}</a>
                         </div>
                     </div>
-
+                    <br>
                     {% endif %}
                     {% endfor %}
                 </div>
