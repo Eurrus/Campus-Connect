@@ -59,6 +59,7 @@ def questionDetailView(request, pk,):  # slug):
     if request.method == 'POST':
         form = AnswerForm(data=request.POST)
         if form.is_valid():
+            print("iM HERE")
             gettingBody = form.cleaned_data['body']
             new_post = form.save(commit=False)
             new_post.answer_owner = request.user
@@ -66,11 +67,9 @@ def questionDetailView(request, pk,):  # slug):
             data.active_date = timezone.now()
             data.save()
             new_post.save()
-            #print(gettingBody)
+            return render(request, 'qa/questions')
     else:
-        form=AnswerForm()  
-        print("hola") 
-        # return render(request, 'qa/questionDetailView.html')    
+        form=AnswerForm()    
     context = {
         'data': data,
         'form' : form,
@@ -111,6 +110,18 @@ def deleteQuestion(request, question_id):
     if request.user == question.post_owner:
         question.is_deleted = True
         question.save()
+        my_conn = sqlite3.connect("C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/db.sqlite3")
+        try:
+          query="SELECT * FROM qa_Question" # query to collect record 
+          df = pd.read_sql(query,my_conn,index_col='id') # create DataFrame
+          print(df.head()) # Print top 5 rows as sample
+          df.to_excel('C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/qa/Question-2023-02-05.xlsx')  # create the excel file 
+        except SQLAlchemyError as e:
+          error = str(e.__dict__['orig'])
+          print(error)
+        else:
+          print("DataFrame created successfully..")
+          my_conn.close()
         return redirect('qa:questionDetailView', pk=question_id)
     else:
         messages.error(request, 'You are not the Post Owner')
@@ -218,14 +229,19 @@ def AjaxFlagForm(request, question_id):
                 getCreateFlag_object = FlagPost.objects.filter(question_forFlag=data).filter(
                          Q(flagged_by=request.user)).exclude(ended=True).all()
                 if getCreateFlag_object:
-                    cont=FlagPost.objects.filter(question_forFlag=data).count()   
-                    if cont>=1:
+                    cont=FlagPost.objects.filter(question_forFlag=data).count()
+                    my_conn = sqlite3.connect("C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/db.sqlite3")
+                    cursor_obj = my_conn.cursor() 
+                    cursor_obj.execute("SELECT * FROM auth_user")
+                    l=cursor_obj.fetchall()
+                    my_conn.close()
+                    l=(int)(0.1)*len(l)
+                    if cont>=l:
                        mail_admins(
-                        'Hola',
-                        'please check the questions'
+                        'Campus Connect',
+                        'Please check the question with id '+str(question_id)+' and delete the question'
                        )
-                       print("hi hello kic")
-                    return JsonResponse({"action": "already flagged"}, status=200)
+                    return redirect("Profile:home")
                 else:
                     if formData == "SPAM" or formData == "RUDE_OR_ABUSIVE":
                         getCreateFlag_object = FlagPost.objects.filter(question_forFlag=data).filter(
@@ -238,7 +254,6 @@ def AjaxFlagForm(request, question_id):
                                 getCreateFlag_object.how_many_votes_on_spamANDRude += 1
                                 getCreateFlag_object.save()
                         else:
-                            print("Second Statement is Excecuting")
                             new_post.flagged_by = request.user
                             new_post.question_forFlag = data
                             new_post.how_many_votes_on_spamANDRude += 1
@@ -249,13 +264,11 @@ def AjaxFlagForm(request, question_id):
                         actions_Flag_Q="VERY_LOW_QUALITY").exclude(
                         ended=True).first()
                         if getCreateFlag_object:
-                            print("Third Statement is Excecuting")
                             new_post.flagged_by = request.user
                             new_post.question_forFlag = data
                             new_post.save()
                             getCreateFlag_object.save()
                         else:
-                            print("Fourth Statement is Excecuting")
                             new_post.flagged_by = request.user
                             new_post.question_forFlag = data
                             # new_post.how_many_votes_on_notAnAnswer += 1
@@ -289,24 +302,30 @@ def AjaxFlagForm(request, question_id):
                                             actions_Flag_Q="ABOUT_GENERAL_COMPUTING_HAR")).exclude(
                                                 ended=True).first()
                         if getCreateFlag_object:
-                            print("Last Second Statement is Excecuting")
                             new_post.flagged_by = request.user
                             new_post.question_forFlag = data
                             new_post.save()
                             getCreateFlag_object.how_many_votes_on_others += 1
                             getCreateFlag_object.save()
                         else:
-                            print("Last Statement is Excecuting")
                             new_post.flagged_by = request.user
                             new_post.question_forFlag = data
                             new_post.how_many_votes_on_others += 1
                             new_post.save()
-        cont=FlagPost.objects.filter(question_forFlag=data).count()   
-        print("Yes me me me") 
-        if cont>=1:
-            print("Yes")  
-        return JsonResponse({"action": "saved"}, status=200)
-    return JsonResponse({"error": ""}, status=400)
+                cont=FlagPost.objects.filter(question_forFlag=data).count()   
+                my_conn = sqlite3.connect("C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/db.sqlite3")
+                cursor_obj = my_conn.cursor() 
+                cursor_obj.execute("SELECT * FROM auth_user")
+                l=cursor_obj.fetchall()
+                my_conn.close()
+                l=(int)(0.1)*len(l)
+                if cont>=l:
+                  mail_admins(
+                        'Campus Connect',
+                        'Please check the question with id '+str(question_id)+' and delete the question'
+                       )  
+        return redirect("Profile:home")
+    return redirect("Profile:error_Page")
 def answer_upvote_downvote(request, answer_id):
     # que = get_object_or_404(Question, pk=question_id)
     post = get_object_or_404(Answer, pk=answer_id)
@@ -316,44 +335,34 @@ def answer_upvote_downvote(request, answer_id):
     getQuestion = Question.objects.get(answer=post)
     if request.GET.get('submit') == 'like':
         if request.user in post.a_vote_downs.all():
-            # REMOVE DOWOVOTE AND UPVOTE
             post.a_vote_downs.remove(request.user)
             print("First Statement is Excecuting")
             post.a_vote_ups.add(request.user)
             return redirect('qa:questionDetailView', pk=question_id)
-            # Check if user downvoted the post if then delete that downvote
-            # reputation (-2) and add new (+10) reputation
-            
 
         elif request.user in post.a_vote_ups.all():
-            # REMOVE UPVOTE
             print("Second Statement is Excecuting")
             post.save()
             post.a_vote_ups.remove(request.user)
             
             return redirect('qa:questionDetailView', pk=question_id)
         else:
-            # UPVOTE
-                # post.date = timezone.now()
                 post.save()
                 post.a_vote_ups.add(request.user)
                 return redirect('qa:questionDetailView', pk=question_id)
     elif request.GET.get('submit') == 'dislike':
-        # Remove Upvote and Downvote
         if request.user in post.a_vote_ups.all():
             post.a_vote_ups.remove(request.user)
             post.a_vote_downs.add(request.user)
             return redirect('qa:questionDetailView', pk=question_id)
 
         elif request.user in post.a_vote_downs.all():
-            # Remove DownVote
             post.a_vote_downs.remove(request.user)
             
             return redirect('qa:questionDetailView', pk=question_id)
         else:
                 print("Sixth Statement is Excecuting")
                 post.a_vote_downs.add(request.user)
-                # post.date = timezone.now()
                 post.save()
                 return redirect('qa:questionDetailView', pk=question_id)
             
@@ -457,9 +466,20 @@ def new_question(request):
                             print(form.errors)
                             form.save()
                             form.save_m2m()
+                            my_conn = sqlite3.connect("C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/db.sqlite3")
+                            try:
+                              query="SELECT * FROM qa_Question" # query to collect record 
+                              df = pd.read_sql(query,my_conn,index_col='id') # create DataFrame
+                              print(df.head()) # Print top 5 rows as sample
+                              df.to_excel('C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/qa/Question-2023-02-05.xlsx')  # create the excel file 
+                            except SQLAlchemyError as e:
+                              error = str(e.__dict__['orig'])
+                              print(error)
+                            else:
+                              print("DataFrame created successfully..")
+                              my_conn.close()
                             return redirect('qa:questions')           
     else:
-        print("else")
         form = QuestionForm()
 
     context = {'form': form}
@@ -599,17 +619,6 @@ def searchQuestion(request):
     if request.method=="POST":
       print("Hola")
       searchQ=request.POST.get("searchQ")
-      my_conn = sqlite3.connect("C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/db.sqlite3")
-      try:
-       query="SELECT * FROM qa_Question" # query to collect record 
-       df = pd.read_sql(query,my_conn,index_col='id') # create DataFrame
-       print(df.head()) # Print top 5 rows as sample
-       df.to_excel('C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/qa/Question-2023-02-05.xlsx')  # create the excel file 
-      except SQLAlchemyError as e:
-        error = str(e.__dict__['orig'])
-        print(error)
-      else:
-        print("DataFrame created successfully..")
       df=pd.read_excel('C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/qa/Question-2023-02-05.xlsx')
       cv = CountVectorizer(stop_words='english')
       doc_term_matrix = cv.fit_transform(df['title'])

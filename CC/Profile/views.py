@@ -9,6 +9,8 @@ def usersPage(request):
     users = User.objects.all()
     context = {'users': users}
     return render(request, 'profile/usersPage.html', context)
+def error_Page(request):
+    return render(request,'profile/error_Page.html')
 def Ajax_searchUser(request):
     q = request.GET.get('w')
     results = User.objects.filter(username__icontains=q).distinct()
