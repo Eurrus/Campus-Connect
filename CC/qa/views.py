@@ -11,7 +11,7 @@ from datetime import timedelta
 from review.models import FlagPost
 from review.forms import FlagQuestionForm
 from django.db.models import  Q
-from django.core.mail import send_mail,mail_admins
+from django.core.mail import mail_admins
 from django.db.models import Case, When
 from openpyxl import load_workbook
 import sqlite3
