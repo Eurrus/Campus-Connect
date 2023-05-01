@@ -9,15 +9,70 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+#"C:\Users\dell\Dropbox\PC\Desktop\FYP\Campus-Connect\models\my_model"
 from pathlib import Path
 import os
 import django_heroku
 from django.conf import settings
+from transformers import AutoTokenizer
+from transformers import AutoModelForSequenceClassification
+from transformers import TrainingArguments, Trainer
+import numpy as np
+import torch
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = os.path.join(BASE_DIR,"templates")
+MODELS=os.path.join(BASE_DIR.parent,"models")
+TOKEN=os.path.join(MODELS,"tokenizer")
+
+MODEL = AutoModelForSequenceClassification.from_pretrained(MODELS+"\my_model")
+TOKENIZER=AutoTokenizer.from_pretrained(TOKEN)
+
+TRAINER = Trainer(model=MODEL)
+LABELS=['academics',
+ 'alumni engagement',
+ 'campus life',
+ 'career',
+ 'culture',
+ 'exams',
+ 'extracurricular',
+ 'finance',
+ 'health',
+ 'higher studies',
+ 'industry skills',
+ 'job search/internship',
+ 'networking',
+ 'personal development',
+ 'professional development',
+ 'research',
+ 'scholarship',
+ 'skills',
+ 'soft skills',
+ 'tech skills',
+ 'time management',
+ 'workplace culture']
+ID2LABEL = {idx:label for idx, label in enumerate(LABELS)}
+LABEL2ID = {label:idx for idx, label in enumerate(LABELS)}
+
+
+
+# encoding = tokenizer(text, return_tensors="pt")
+# encoding = {k: v.to(trainer.model.device) for k,v in encoding.items()}
+
+# outputs = trainer.model(**encoding)
+# logits = outputs.logits
+# logits.shape
+# # apply sigmoid + threshold
+# sigmoid = torch.nn.Sigmoid()
+# probs = sigmoid(logits.squeeze().cpu())
+# predictions = np.zeros(probs.shape)
+# # print(predictions)
+# predictions[np.where(probs >= 0.2)] = 1
+# # turn predicted id's into actual label names
+# predicted_labels = [id2label[idx] for idx, label in enumerate(predictions) if label == 1.0]
+# print(predicted_labels)
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/

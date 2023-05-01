@@ -3,9 +3,8 @@ from django import forms
 class QuestionForm(forms.ModelForm):
 	class Meta:
 		model = Question
-		fields = ['title','body','tags']
+		fields = ['title','body']
 class AnswerForm(forms.ModelForm):
-
 	class Meta:
 		model = Answer
 		fields = ['body']

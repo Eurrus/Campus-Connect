@@ -1,0 +1,232 @@
+{% extends "Profile/base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+
+
+<!DOCTYPE html>
+
+
+<html class="html__responsive ">
+
+<head>
+
+    <title>Questions - Campus Connect</title>
+    <link href="{% static 'notification/css/notification.css' %}" type="text/css" media="all" rel="stylesheet" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script async src="https://cdn.sstatic.net/Js/third-party/stacks/stacks.min.js?v=587378ef592b"></script>
+    <script src="https://cdn.sstatic.net/Js/stub.en.js?v=218a32d1dba9"></script>
+
+    <link href="{% static 'home/css/notification.css' %}" type="text/css" media="all" rel="stylesheet" />
+    <link href="{% static 'home/css/notification.css' %}" type="text/css" media="all" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Shared/stacks.css?v=15473555f232">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.sstatic.net/Sites/stackoverflow/primary.css?v=de9fb8b74f61">
+    <link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Shared/Channels/channels.css?v=47a5e0f03c81">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .logo-name {
+            padding: 8px;
+            color: #568;
+            border: 1px solid white;
+            font-family: 'Nexa';
+            src: url(...);
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        .fa-stack-overflow {
+            color: blue;
+        }
+    </style>
+</head>
+
+<body class="questions-page unified-theme">
+    <!-- REVIEW'S INBOX - END -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+        integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+    <div class="container">
+        <div id="left-sidebar" data-is-here-when="md lg" class="left-sidebar js-pinned-left-sidebar ps-relative">
+            <div class="left-sidebar--sticky-container js-sticky-leftnav">
+                <nav role="navigation">
+                    <ol class="nav-links">
+                        <li>
+                            <a href="/" class="pl8 nav-links--link">
+                                <div class="d-flex ai-center">
+                                    <div class="flex--item truncate">
+                                        Home
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <ol class="nav-links">
+                                <li class="fs-fine tt-uppercase ml8 mt16 mb4 fc-light">Public</li>
+
+                                <li class="youarehere">
+                                    <a id="nav-questions" href="{% url 'qa:questions' %}"
+                                        class="pl8 nav-links--link -link__with-icon">
+                                        <i class="fa fa-lg fa-question fa-solid mx-2"> </i>
+                                        <span class="-link--channel-name">Questions</span>
+                                    </a>
+                                </li>
+
+
+                                <li class="">
+                                    <a id="nav-tags" class="nav-links--link" href="{% url 'Profile:usersPage' %}">
+                                        <div class="d-flex ai-center">
+
+                                            <div class="flex--item truncate"><i class="fa fa-lg fa-tag fa-solid mx-2">
+                                                </i>Tags</div>
+                                        </div>
+                                    </a>
+                                </li>
+
+
+                                <li class="">
+                                    <a id="nav-questions" href="{% url 'Profile:usersPage' %}"
+                                        class="pl8 nav-links--link -link__with-icon">
+                                        <i class="fa fa-lg fa-user fa-solid mx-2"> </i>
+                                        <span class="-link--channel-name">Users</span>
+                                    </a>
+                                </li>
+
+
+
+                            </ol>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+        </div>
+
+
+
+        <div id="content" class="snippet-hidden">
+            <div id="mainbar" role="main" aria-labelledby="h-all-questions">
+                <div class="d-flex">
+                    <h1 class="flex--item fl1 fs-headline1 mb24">All Questions</h1>
+                    <div class="d-flex fw-wrap ai-stretch md:d-block">
+                        <div class="flex--item mb12 ps-relative">
+                            <form method="post" class="d-flex" action="{% url 'qa:searchQuestion' %}">
+                                {% csrf_token %}
+                                <input id="searchQ" class="form-control me-2" autocomplete="off" name="searchQ"
+                                    type="text" placeholder="Search question">
+                                <!-- <svg aria-hidden="true" class="s-input-icon s-input-icon__search svg-icon iconSearch">
+                                    <path
+                                        d="m18 16.5-5.14-5.18h-.35a7 7 0 10-1.19 1.19v.35L16.5 18l1.5-1.5ZM12 7A5 5 0 112 7a5 5 0 0110 0Z" />
+                                </svg> -->
+                                <button class=" my-2 py-0 btn-sm btn-outline-secondary" type="submit"><i
+                                        class="fa fa-sm fa-search" aria-hidden="true"></i>
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                    <div class="ml12 aside-cta flex--item print:d-none">
+                        <a href="{% url 'qa:new_question' %}" class="mt-2 ws-nowrap btn btn-lg btn-primary">Ask
+                            Question</a>
+                    </div>
+                </div>
+                <br>
+                <div class="d-flex flex-column">
+                    {% for question in questions %}
+                    {% if question.is_deleted %}
+                    {% if question.post_owner == user %}
+
+                    <div class="card bg-light">
+                        <div class="card-header">
+                            <a href="{{question.get_absolute_url}}" class="link-primary">
+                                {{question.title|truncatechars:50}}</a>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{question.body}}</p>
+                        </div>
+                        <div class="card-footer bg-light"><a href="{{question.post_owner.profile.get_absolute_url}}"
+                                class="link-primary">{{question.post_owner}}</a>
+                        </div>
+                    </div>
+                    <br>
+                    {% endif %}
+                    {% else %}
+                    <div class="card bg-light">
+                        <div class="card-header">
+                            <a href="{{question.get_absolute_url}}" class="link-primary">
+                                {{question.title|truncatechars:50}}</a>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{question.body}}</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{{question.post_owner.profile.get_absolute_url}}"
+                                class="link-primary">{{question.post_owner}}</a>
+                        </div>
+                    </div>
+                    <br>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+                <!-- <div>
+                    {% for question in questions %}
+                    <div>
+                        <div>
+                            <div class="summary">
+                                <h3><a href="{{question.get_absolute_url}}"
+                                        class="question-hyperlink">{{question.title}}</a></h3>
+                                <div class="excerpt">
+                                    {{question.body|truncatechars:200}}
+                                </div>
+
+                                <div class="d-flex ai-start fw-wrap">
+                                    <div class="flex--item ml-auto fl-shrink0 started mt0">
+                                        <div class="user-info ">
+                                            <div class="user-gravatar32">
+                                                <a href="{{question.post_owner.profile.get_absolute_url}}">
+                                                </a>
+                                            </div>
+                                            <div class="user-details">
+                                                <a
+                                                    href="{{question.post_owner.profile.get_absolute_url}}">{{question.post_owner}}</a>
+                                                <div class="-flair">
+                                                    <span class="reputation-score" title="reputation score "
+                                                        dir="ltr">{{question.post_owner}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>  -->
+            </div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript" src="{% static 'notification/js/notification.js' %}"></script>
+
+
+</body>
+<style>
+    .btn-primary,
+    .btn-primary:hover,
+    .btn-primary:active,
+    .btn-primary:visited {
+        background-color: #5A4AE3 !important;
+    }
+</style>
+
+</html>
+
+
+{% endblock content %}

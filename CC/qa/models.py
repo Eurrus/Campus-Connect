@@ -9,7 +9,7 @@ class Question(models.Model):
     post_owner = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=5000, default='')
     body = MartorField()
-    tags = TaggableManager()
+    tags = models.CharField(max_length=100, default='')
     date = models.DateTimeField(auto_now_add=True)
     is_deleted = models.BooleanField(default=False)
     print(tags)

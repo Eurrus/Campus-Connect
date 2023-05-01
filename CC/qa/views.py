@@ -15,10 +15,11 @@ from django.core.mail import mail_admins
 from django.db.models import Case, When
 from openpyxl import load_workbook
 import sqlite3
+import torch
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 # Create your views here.
-
+from django.conf import settings
 #cosine similarity
 import numpy as np
 import pandas as pd
@@ -37,12 +38,10 @@ def questions(request):
     }
 
  return render(request, 'qa/Questions_List.html',context)
-def questionDetailView(request, pk,):  # slug):
+def questionDetailView(request, pk):  # slug):
     data = get_object_or_404(Question, pk=pk)
-
-    
+    tags=data.tags.split(",")
     answers_of_questions = sorted(data.answer_set.all(), key = lambda x: x.countAllTheVotes,reverse=True) 
-     
     #Answer.objects.filter(pk__in=ratings_list)
     STORING_THE_ORIGINAL = []
     for anss in answers_of_questions:
@@ -59,7 +58,6 @@ def questionDetailView(request, pk,):  # slug):
     if request.method == 'POST':
         form = AnswerForm(data=request.POST)
         if form.is_valid():
-            print("iM HERE")
             gettingBody = form.cleaned_data['body']
             new_post = form.save(commit=False)
             new_post.answer_owner = request.user
@@ -72,6 +70,7 @@ def questionDetailView(request, pk,):  # slug):
         form=AnswerForm()    
     context = {
         'data': data,
+        'tags':tags,
         'form' : form,
         'answers':answers
     }
@@ -100,6 +99,15 @@ def undelete_answer(request, answer_id):
     else:
         messages.error(request, 'You are not post owner')
         return redirect('qa:questionDetailView', pk=answer.questionans.id)
+def tags(request,tag):
+    questions = Question.objects.filter(tags__contains=tag)
+    context={
+    'questions': questions,
+    'user':request.user,
+    }
+
+    return render(request, 'qa/tags.html',context)
+    
 def deleteQuestion(request, question_id):
     """
     view to delete question and award badges if user is eligible
@@ -433,11 +441,33 @@ def new_question(request):
         form = QuestionForm(request.POST, request.FILES)
         if form.is_valid():
                 print("valid form")
-                formTags = form.cleaned_data['tags']
+                # formTags = form.cleaned_data['tags']
                 gettingBody = form.cleaned_data['body']
                 gettingTitle = form.cleaned_data['title']
+                text=gettingTitle
+                tokenizer=settings.TOKENIZER
+                trainer=settings.TRAINER
+                id2label=settings.ID2LABEL
+                encoding = tokenizer(text, return_tensors="pt")
+                encoding = {k: v.to(trainer.model.device) for k,v in encoding.items()}
+                outputs = trainer.model(**encoding)
+                logits = outputs.logits
+                logits.shape
+                # apply sigmoid + threshold
+                sigmoid = torch.nn.Sigmoid()
+                probs = sigmoid(logits.squeeze().cpu())
+                predictions = np.zeros(probs.shape)
+                # print(predictions)
+                predictions[np.where(probs >= 0.2)] = 1
+                # turn predicted id's into actual label names
+                predicted_labels = [id2label[idx] for idx, label in enumerate(predictions) if label == 1.0]
+                print(predicted_labels)
+                tags=','.join(predicted_labels)
+                # form.cleaned_data['tags']=predicted_labels
                 new_post = form.save(commit=False)
+                new_post.tags=tags
                 new_post.post_owner = request.user
+                print(new_post.tags)
                 if len(gettingBody) >= 0 and len(gettingBody) <= 29:
                             messages.error(
                                 request, "Body Text should atleast 30 words. You entered " + str(len(gettingBody)))
@@ -471,10 +501,10 @@ def reviewQuestion(request):
         #AllTags = Tag.objects.all().values_list('name', flat=True)
         post_title = request.GET.get('title', None)
         post_body = request.GET.get('body', None)
-        formTags = request.GET.get('tags', None)
+        # formTags = request.GET.get('tags', None)
         taken = Question.objects.filter(title__iexact=post_title).exists()
-        formTags = formTags.split(",")
-        print(formTags)
+        # formTags = formTags.split(",")
+        # print(formTags)
         # for typedTags in formTags:
         #     check_if_everything_is_fine = all(
         #         typedTags in AllTags for typedTags in formTags)
@@ -503,21 +533,21 @@ def reviewQuestion(request):
 
         # using list comprehension to
         # perform removal
-        new = [i for i in formTags if i]
+        # new = [i for i in formTags if i]
 
-        # spliting = formTags.split(",")
-        # print(len(spliting))
-        # lengthing = len(spliting)
-        # print(lengthing)
-        # for words in spliting:
-        #     print(count(words))
+        # # spliting = formTags.split(",")
+        # # print(len(spliting))
+        # # lengthing = len(spliting)
+        # # print(lengthing)
+        # # for words in spliting:
+        # #     print(count(words))
 
-        if len(new) < 1:
-            print("Fine")
-            showError = True
-        else:
-            print("Raise the Error")
-            showError = False
+        # if len(new) < 1:
+        #     print("Fine")
+        #     showError = True
+        # else:
+        #     print("Raise the Error")
+        #     showError = False
 
         if len(post_title) <= 5:
             print("Add atleast 2 more Words")
@@ -530,7 +560,7 @@ def reviewQuestion(request):
         # else:
         #     is_it_true = False
 
-        if taken == False and showError == False  and showLessTitleError == False and postBody == False:
+        if taken == False  and showLessTitleError == False and postBody == False:
             allClear = True
             print("Everything Clear")
         else:
@@ -540,7 +570,7 @@ def reviewQuestion(request):
         data = {
             'taken': taken,
             # 'postBody':postBody,
-            'showError': showError,
+            # 'showError': showError,
             'allClear': allClear,
         }
 
@@ -548,8 +578,8 @@ def reviewQuestion(request):
             data['error_message_of_title'] = f'Already Existed'
         elif postBody:
             data['error_message_of_body_text'] = f'Words are less than 15'
-        elif data['showError']:
-            data['error_message_of_tag'] = f'Add atleast One Tag'
+        # elif data['showError']:
+        #     data['error_message_of_tag'] = f'Add atleast One Tag'
         return JsonResponse(data)
 
 

@@ -18,4 +18,5 @@ urlpatterns=[
     path('AjaxFlagForm/<int:question_id>/', views.AjaxFlagForm, name='AjaxFlagForm'),
     path('answer_upvote_downvote/<int:answer_id>/', views.answer_upvote_downvote, name='answer_upvote_downvote'),
     path('searchQuestion', views.searchQuestion, name='searchQuestion'),
+    path('tags/<str:tag>/',views.tags,name='tags')
 ]
