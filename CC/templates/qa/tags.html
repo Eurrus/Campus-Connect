@@ -111,7 +111,7 @@
         <div id="content" class="snippet-hidden">
             <div id="mainbar" role="main" aria-labelledby="h-all-questions">
                 <div class="d-flex">
-                    <h1 class="flex--item fl1 fs-headline1 mb24">All Questions</h1>
+                    <h1 class="flex--item fl1 fs-headline1 mb24">{{ tags }}</h1>
                     <div class="d-flex fw-wrap ai-stretch md:d-block">
                         <div class="flex--item mb12 ps-relative">
                             <form method="post" class="d-flex" action="{% url 'qa:searchQuestion' %}">

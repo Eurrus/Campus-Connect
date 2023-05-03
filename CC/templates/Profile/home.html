@@ -50,8 +50,9 @@
                                 <li class="">
                                     <a id="nav-tags" class="nav-links--link">
                                         <div class="d-flex ai-center">
-                                            
-                                            <div class="flex--item truncate"><i class="fa fa-lg fa-tag fa-solid mx-2"> </i>Tags</div>
+
+                                            <div class="flex--item truncate"><i class="fa fa-lg fa-tag fa-solid mx-2">
+                                                </i>Tags</div>
                                         </div>
                                     </a>
                                 </li>
@@ -83,11 +84,50 @@
             <div id="mainbar">
                 <div class="d-flex">
                     <h1 class="flex--item fl1 fs-headline1">Top Questions</h1>
+
                     <div class="ml12 aside-cta flex--item print:d-none">
                         <a href="{% url 'qa:new_question' %}" class="ws-nowrap btn btn-primary">Ask Question</a>
                     </div>
                 </div>
+                <br>
                 <!-- #5A4AE3 -->
+                <div class="d-flex flex-column">
+                    {% for question in questions %}
+                    {% if question.is_deleted %}
+                    {% if question.post_owner == user %}
+
+                    <div class="card bg-light">
+                        <div class="card-header">
+                            <a href="{{question.get_absolute_url}}" class="link-primary">
+                                {{question.title|truncatechars:50}}</a>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{question.body}}</p>
+                        </div>
+                        <div class="card-footer bg-light"><a href="{{question.post_owner.profile.get_absolute_url}}"
+                                class="link-primary">{{question.post_owner}}</a>
+                        </div>
+                    </div>
+                    <br>
+                    {% endif %}
+                    {% else %}
+                    <div class="card bg-light">
+                        <div class="card-header">
+                            <a href="{{question.get_absolute_url}}" class="link-primary">
+                                {{question.title|truncatechars:50}}</a>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{question.body}}</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{{question.post_owner.profile.get_absolute_url}}"
+                                class="link-primary">{{question.post_owner}}</a>
+                        </div>
+                    </div>
+                    <br>
+                    {% endif %}
+                    {% endfor %}
+                </div>
             </div>
             <div id="sidebar">
                 <div class="s-sidebarwidget s-sidebarwidget__blue s-anchors s-anchors__grayscale mb16">
@@ -146,9 +186,12 @@
 </body>
 
 <style>
-    .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
-    background-color: #5A4AE3 !important;
-}
+    .btn-primary,
+    .btn-primary:hover,
+    .btn-primary:active,
+    .btn-primary:visited {
+        background-color: #5A4AE3 !important;
+    }
 </style>
 
 </html>

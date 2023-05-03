@@ -12,7 +12,6 @@ class Question(models.Model):
     tags = models.CharField(max_length=100, default='')
     date = models.DateTimeField(auto_now_add=True)
     is_deleted = models.BooleanField(default=False)
-    print(tags)
     class Meta:
         ordering = ["-date"]
     def __unicode__(self):
@@ -24,7 +23,6 @@ class Question(models.Model):
         print(get_Upvotes - get_DownVotes)
         return get_Upvotes - get_DownVotes
     def get_absolute_url(self):
-        # 'slug':self.slug})
         return reverse('qa:questionDetailView', kwargs={'pk': self.pk, })
 class QUpvote(models.Model):
     upvote_by_q = models.ForeignKey(User, on_delete=models.CASCADE)
