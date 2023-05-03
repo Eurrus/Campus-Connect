@@ -23,9 +23,12 @@ import torch
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = os.path.join(BASE_DIR,"templates")
 MODELS=os.path.join(BASE_DIR.parent,"models")
+# print(MODELS)
+# print(TEMPLATE_DIR)
 TOKEN=os.path.join(MODELS,"tokenizer")
 
 MODEL = AutoModelForSequenceClassification.from_pretrained(MODELS+"\my_model")
+# print(MODEL)
 TOKENIZER=AutoTokenizer.from_pretrained(TOKEN)
 
 TRAINER = Trainer(model=MODEL)

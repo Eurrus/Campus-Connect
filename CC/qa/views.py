@@ -26,7 +26,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.metrics.pairwise import cosine_similarity
-df=pd.read_excel('C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/qa/cosine_similarity_data.xlsx')
+df=pd.read_excel('C:/Users/Shanti/Documents/fyp/Campus-Connect/CC/qa/cosine_similarity_data.xlsx')
 
 
 def questions(request):
@@ -479,12 +479,12 @@ def new_question(request):
                             print(form.errors)
                             form.save()
                             form.save_m2m()
-                            my_conn = sqlite3.connect("C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/db.sqlite3")
+                            my_conn = sqlite3.connect("C:/Users/Shanti/Documents/fyp/Campus-Connect/CC/db.sqlite3")
                             try:
                               query="SELECT * FROM qa_Question" # query to collect record 
                               df = pd.read_sql(query,my_conn,index_col='id') # create DataFrame
                               print(df.head()) # Print top 5 rows as sample
-                              df.to_excel('C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/qa/Question-2023-02-05.xlsx')  # create the excel file 
+                              df.to_excel('C:/Users/Shanti/Documents/fyp/Campus-Connect/CC/qa/Question-2023-02-05.xlsx')  # create the excel file 
                             except SQLAlchemyError as e:
                               error = str(e.__dict__['orig'])
                               print(error)
@@ -588,7 +588,7 @@ def searchQuestion(request):
     if request.method=="POST":
       print("Hola")
       searchQ=request.POST.get("searchQ")
-      df=pd.read_excel('C:/Users/dell/Dropbox/PC/Desktop/FYP/Campus-Connect/CC/qa/Question-2023-02-05.xlsx')
+      df=pd.read_excel('C:/Users/Shanti/Documents/fyp/Campus-Connect/CC/qa/Question-2023-02-05.xlsx')
       cv = CountVectorizer(stop_words='english')
       doc_term_matrix = cv.fit_transform(df['title'])
       doc_term_matrix.shape

@@ -5,7 +5,7 @@ from django.http import HttpResponse,JsonResponse
 # Create your views here.
 def home(request):
    questions = Question.objects.all()
-   sorted_results = sorted(questions, key= lambda q: q.calculate_UpVote_DownVote())
+#    sorted_results = sorted(questions, key= lambda q: q.calculate_UpVote_DownVote())
    context={'questions':questions}
    return render(request, 'Profile/home.html',context)
 def usersPage(request):
