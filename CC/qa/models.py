@@ -20,7 +20,6 @@ class Question(models.Model):
     def calculate_UpVote_DownVote(self):
         get_Upvotes = self.qupvote_set.count()
         get_DownVotes = self.qdownvote_set.count()
-        print(get_Upvotes - get_DownVotes)
         return get_Upvotes - get_DownVotes
     def get_absolute_url(self):
         return reverse('qa:questionDetailView', kwargs={'pk': self.pk, })

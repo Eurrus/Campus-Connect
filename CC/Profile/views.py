@@ -2,11 +2,15 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from qa.models import Question
 from django.http import HttpResponse,JsonResponse
+from django.db import models
 # Create your views here.
 def home(request):
-   questions = Question.objects.all()
-#    sorted_results = sorted(questions, key= lambda q: q.calculate_UpVote_DownVote())
-   context={'questions':questions}
+   objects=Question.objects.all()
+#    print(objects)
+   objects=sorted(objects,key = lambda obj: obj.calculate_UpVote_DownVote,reverse=True)
+#    objects=sort(objects, key = lambda obj: obj.calculate_UpVote_DownVote)
+#    print(objects)
+   context={'questions':objects}
    return render(request, 'Profile/home.html',context)
 def usersPage(request):
     users = User.objects.all()

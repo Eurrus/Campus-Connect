@@ -463,6 +463,9 @@ def new_question(request):
                 # turn predicted id's into actual label names
                 predicted_labels = [id2label[idx] for idx, label in enumerate(predictions) if label == 1.0]
                 print(predicted_labels)
+                if('job search/internship') in predicted_labels:
+                    index=predicted_labels.index('job search-internship')
+                    predicted_labels[index]="job search-internship"
                 tags=','.join(predicted_labels)
                 # form.cleaned_data['tags']=predicted_labels
                 new_post = form.save(commit=False)
